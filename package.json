@@ -1,6 +1,6 @@
 {
-  "name": "pristinejs",
-  "version": "0.1.9",
+  "name": "pristine-neue",
+  "version": "0.0.1",
   "description": "A tiny vanilla javascript form validation library",
   "main": "dist/pristine.js",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sha256/Pristine.git"
+    "url": "git+https://github.com/nicolas-cusan/pristine-neue.git"
   },
   "keywords": [
     "vanilla",
@@ -18,12 +18,12 @@
     "micro",
     "tiny"
   ],
-  "author": "Shamim Hasnath",
-  "license": "ISC",
+  "author": "Nicolas Cusan",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sha256/Pristine/issues"
+    "url": "https://github.com/nicolas-cusan/pristine-neue/issues"
   },
-  "homepage": "https://github.com/sha256/Pristine#readme",
+  "homepage": "https://github.com/nicolas-cusan/pristine-neue#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
