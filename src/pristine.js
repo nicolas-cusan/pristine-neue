@@ -13,7 +13,7 @@ let defaultConfig = {
 
 const PRISTINE_ERROR = 'pristine-error';
 const SELECTOR =
-  'input:not([disabled]):not([type^=hidden]):not([type^=submit]):not([type^=button]), select, textarea';
+  'input:not([disabled]):not([type^=hidden]):not([type^=submit]):not([type^=button]):not([data-pristine-ignore]), select, textarea';
 const ALLOWED_ATTRIBUTES = [
   'required',
   'min',
@@ -22,8 +22,7 @@ const ALLOWED_ATTRIBUTES = [
   'maxlength',
   'pattern',
 ];
-const EMAIL_REGEX =
-  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const MESSAGE_REGEX = /-message(?:-([a-z]{2}(?:_[A-Z]{2})?))?/; // matches, -message, -message-en, -message-en_US
 let currentLocale = 'en';
