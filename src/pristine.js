@@ -22,7 +22,8 @@ const ALLOWED_ATTRIBUTES = [
   'maxlength',
   'pattern',
 ];
-const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const EMAIL_REGEX =
+  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const MESSAGE_REGEX = /-message(?:-([a-z]{2}(?:_[A-Z]{2})?))?/; // matches, -message, -message-en, -message-en_US
 let currentLocale = 'en';
@@ -306,6 +307,7 @@ export default function Pristine(form, config, live) {
     if (self.config.classTo === self.config.errorTextParent) {
       errorTextParent = errorClassElement;
     } else {
+      if (!errorClassElement) return [null, null];
       errorTextParent = errorClassElement.querySelector(
         '.' + self.config.errorTextParent
       );

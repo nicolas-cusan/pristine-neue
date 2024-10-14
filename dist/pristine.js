@@ -335,6 +335,7 @@
         if (self.config.classTo === self.config.errorTextParent) {
           errorTextParent = errorClassElement;
         } else {
+          if (!errorClassElement) return [null, null];
           errorTextParent = errorClassElement.querySelector('.' + self.config.errorTextParent);
         }
         if (errorTextParent) {
