@@ -157,7 +157,7 @@ function q(t, l, o = !0) {
   }, r.validateField = function(e) {
     let s = [], i = !0, n = [];
     for (let c = 0; e.validators[c]; c++) {
-      let a = e.validators[c], f = e.params[a.name] ? e.params[a.name] : [];
+      let a = e.validators[c], f = e.params[a.name] ? [...e.params[a.name]] : [];
       f[0] = e.input.value, f.length > 1 ? f.splice(1, 0, e.input) : f.push(e.input);
       let d = a.fn.apply(null, f);
       if (d instanceof Promise)

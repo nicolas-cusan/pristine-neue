@@ -313,7 +313,7 @@ export default function Pristine(form, config, live = true) {
     for (let i = 0; field.validators[i]; i++) {
       let validator = field.validators[i];
       let params = field.params[validator.name]
-        ? field.params[validator.name]
+        ? [...field.params[validator.name]] // Create a copy of the parameters array
         : [];
       params[0] = field.input.value;
 
