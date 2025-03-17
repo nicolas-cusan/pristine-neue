@@ -1,0 +1,47 @@
+body {
+  padding: 2em;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  display: flex;
+}
+
+form {
+  max-width: 40rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+input[type='text'],
+input[type='email'] {
+  padding: 0.5em 1em;
+  border: 1px solid #ccc;
+  border-radius: 0.25em;
+  width: 100%;
+
+  &:focus {
+    outline: none;
+    border-color: #000;
+  }
+}
+
+.field {
+  margin-bottom: 1em;
+}
+
+.actions {
+  padding-top: 1em;
+}
+
+.btn {
+  font-weight: 500;
+  padding: 0.5em 1em;
+  border-radius: 0.25em;
+  background-color: #000;
+  color: #fff;
+}

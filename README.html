@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Pristine Neue - Vanilla javascript form validation library</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="pristine-neue---vanilla-javascript-form-validation-library">Pristine Neue - Vanilla javascript form validation library</h1>
+<h2 id="credits">Credits</h2>
+<p>This library is a fork of <a href="https://github.com/sha256/Pristine">prsitinejs</a> by <a href="https://github.com/sha256">sha256</a></p>
+<h2 id="living-demo">Living demo</h2>
+<p>Some examples of use can be found <a href="http://pristine.js.org/demo.html">here</a>.</p>
+<p>This demo is from the original library, a new demo is coming soon.</p>
+<h2 id="installation">Installation</h2>
+<pre><code class="language-sh">$ npm install pristine-neue --save
+</code></pre>
+<h2 id="usage">Usage</h2>
+<p>Include the javascript file in your html head or just before the closing body tag</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;path/to/file/pristine.js&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text/javascript&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<p>Create a Pristine instance and handle the submission.</p>
+<pre><code class="language-js"><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;DOMContentLoaded&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-keyword">var</span> form = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;form1&#x27;</span>);
+  <span class="hljs-keyword">var</span> pristine = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Pristine</span>(form);
+
+  <span class="hljs-comment">// Handle the form submission</span>
+  form.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;submit&#x27;</span>, <span class="hljs-keyword">async</span> (e) =&gt; {
+    <span class="hljs-comment">// The validate method return as Promise that resolves to true / false</span>
+    <span class="hljs-keyword">const</span> valid = <span class="hljs-keyword">await</span> pristine.<span class="hljs-title function_">validate</span>();
+
+    <span class="hljs-keyword">if</span> (valid) {
+      <span class="hljs-comment">// Submit the form..</span>
+    }
+  });
+});
+</code></pre>
+<p>Pristine automatically validates <code>required, min, max, minlength, maxlength, pattern</code> attributes and the value of type attributes
+like <code>email, number</code> and more..</p>
+<p><code>Pristine</code> takes <code>3</code> parameters</p>
+<ul>
+<li><strong>form</strong> DOM element con containinng the fields to validate. Tipically a form element, but it can be any DOM element.</li>
+<li><strong>config</strong> An object containing the configuration. <a href="#default-configuation">See default configuration</a>.</li>
+<li><strong>live</strong> A boolean value indicating whether pristine should validate as you type, default is <code>true</code>.</li>
+</ul>
+<h2 id="adding-custom-validator">Adding custom validator</h2>
+<p>You can add custom validators to a spcific pristine intance or add them globally.</p>
+<h3 id="adding-a-custom-validator-to-an-instance">Adding a custom validator to an instance</h3>
+<pre><code class="language-javascript"><span class="hljs-keyword">var</span> pristine = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Pristine</span>(<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;form&#x27;</span>));
+
+<span class="hljs-keyword">var</span> elem = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;email&#x27;</span>);
+
+<span class="hljs-comment">// A validator to check if the first letter is capitalized</span>
+pristine.<span class="hljs-title function_">addValidator</span>(
+  elem,
+  <span class="hljs-function">(<span class="hljs-params">value</span>) =&gt;</span> {
+    <span class="hljs-keyword">if</span> (value.<span class="hljs-property">length</span> &amp;&amp; value[<span class="hljs-number">0</span>] === value[<span class="hljs-number">0</span>].<span class="hljs-title function_">toUpperCase</span>()) {
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  },
+  <span class="hljs-string">&#x27;The first character must be capitalized&#x27;</span>,
+  <span class="hljs-number">2</span>,
+  <span class="hljs-literal">false</span>
+);
+</code></pre>
+<h3 id="adding-a-global-custom-validator">Adding a global custom validator</h3>
+<p>Global validators must be added before creating the pristine instance</p>
+<pre><code class="language-javascript"><span class="hljs-comment">// A validator to check if the input value is within a specified range</span>
+<span class="hljs-title class_">Pristine</span>.<span class="hljs-title function_">addValidator</span>(
+  <span class="hljs-string">&#x27;my-range&#x27;</span>,
+  <span class="hljs-function">(<span class="hljs-params">value, el, param1, param2</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">parseInt</span>(param1) &lt;= value &amp;&amp; value &lt;= <span class="hljs-built_in">parseInt</span>(param2);
+  },
+  <span class="hljs-string">&#x27;The value (${0}) must be between ${1} and ${2}&#x27;</span>,
+  <span class="hljs-number">5</span>,
+  <span class="hljs-literal">false</span>
+);
+
+<span class="hljs-keyword">var</span> pristine = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Pristine</span>(<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;form&#x27;</span>));
+</code></pre>
+<p>Assign the new validator to inputs like this:</p>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;form-control&quot;</span> <span class="hljs-attr">data-pristine-my-range</span>=<span class="hljs-string">&quot;10,30&quot;</span> /&gt;</span>
+</code></pre>
+<h3 id="validator-function-arguments">Validator Function Arguments</h3>
+<p>Validator functions receive arguments in the following order:</p>
+<ol>
+<li>
+<p><strong>value</strong> - The current value of the input field being validated</p>
+</li>
+<li>
+<p><strong>element</strong> - The DOM element (input, select, textarea) being validated</p>
+</li>
+<li>
+<p><strong>Additional parameters</strong> - These come from the <code>data-pristine-*</code> attributes and are processed as follows:</p>
+<ul>
+<li><strong>Pattern attributes</strong> (<code>data-pristine-pattern</code>): The entire pattern string is passed as a single argument</li>
+<li><strong>JSON values</strong>: If the attribute value is valid JSON (starts with <code>{</code> or <code>[</code>), it will be parsed and passed as a single argument</li>
+<li><strong>Regular strings</strong>: For all other cases, the attribute value is split at commas (<code>,</code>) and each part is passed as a separate argument</li>
+</ul>
+</li>
+</ol>
+<h4 id="examples">Examples:</h4>
+<pre><code class="language-html"><span class="hljs-comment">&lt;!-- Regular comma-separated values --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">data-pristine-min-max</span>=<span class="hljs-string">&quot;5,10&quot;</span> /&gt;</span>
+<span class="hljs-comment">&lt;!-- Validator receives: (value, element, &quot;5&quot;, &quot;10&quot;) --&gt;</span>
+
+<span class="hljs-comment">&lt;!-- Pattern value --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">data-pristine-pattern</span>=<span class="hljs-string">&quot;/^[A-Z]+$/i&quot;</span> /&gt;</span>
+<span class="hljs-comment">&lt;!-- Validator receives: (value, element, &quot;/^[A-Z]+$/i&quot;) --&gt;</span>
+
+<span class="hljs-comment">&lt;!-- JSON value --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">data-pristine-custom-config</span>=<span class="hljs-string">&#x27;{&quot;option1&quot;: true, &quot;option2&quot;: &quot;value&quot;}&#x27;</span> /&gt;</span>
+<span class="hljs-comment">&lt;!-- Validator receives: (value, element, {&quot;option1&quot;: true, &quot;option2&quot;: &quot;value&quot;}) --&gt;</span>
+</code></pre>
+<p>When creating custom validators, ensure your function accepts the appropriate number of parameters based on how you plan to configure it in HTML.</p>
+<h3 id="add-custom-error-messages">Add custom error messages</h3>
+<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">required</span> <span class="hljs-attr">data-pristine-required-message</span>=<span class="hljs-string">&quot;My custom message&quot;</span> /&gt;</span>
+</code></pre>
+<p>Add an attribute like <code>data-pristine-&lt;ValidatorName&gt;-message</code>with the custom message as value to show custom error messages. You can add custom messages like this for as many validators as you need. Here <code>ValidatorName</code> means <code>required</code>, <code>email</code>, <code>min</code>, <code>max</code> etc.</p>
+<h2 id="built-in-validators">Built-in validators</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Usage</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>required</code></td>
+<td><code>required</code> or <code>data-pristine-required</code></td>
+<td>Validates required fields</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td><code>type=&quot;email&quot;</code> or <code>data-pristine-type=&quot;email&quot;</code></td>
+<td>Validates email</td>
+</tr>
+<tr>
+<td><code>number</code></td>
+<td><code>type=&quot;number&quot;</code> or <code>data-pristine-type=&quot;number&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>integer</code></td>
+<td><code>data-pristine-type=&quot;integer&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>minlength</code></td>
+<td><code>minlength=&quot;10&quot;</code> or <code>data-pristine-minlength=&quot;10&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>maxlength</code></td>
+<td><code>maxlength=&quot;10&quot;</code> or <code>data-pristine-maxlength=&quot;10&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>min</code></td>
+<td><code>min=&quot;20&quot;</code> or <code>data-pristine-min=&quot;20&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>max</code></td>
+<td><code>max=&quot;100&quot;</code> or <code>data-pristine-max=&quot;100&quot;</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>pattern</code></td>
+<td><code>pattern=&quot;/[a-z]+$/i&quot;</code> or <code>data-pristine-pattern=&quot;/[a-z]+$/i&quot;</code>, <code>\</code> must be escaped (replace with <code>\\</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>equals</code></td>
+<td><code>data-pristine-equals=&quot;#field-selector&quot;</code></td>
+<td>Check that two fields are equal</td>
+</tr>
+</tbody>
+</table>
+<h2 id="api">API</h2>
+<p><strong>Pristine(form, config, live)</strong></p>
+<p><em>Constructor</em></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>form</code></td>
+<td>-</td>
+<td><center>✔</center></td>
+<td>The form element</td>
+</tr>
+<tr>
+<td><code>config</code></td>
+<td>See below</td>
+<td><center>✕</center></td>
+<td>The config object</td>
+</tr>
+<tr>
+<td><code>live</code></td>
+<td><code>true</code></td>
+<td><center>✕</center></td>
+<td>Whether pristine should validate as you type</td>
+</tr>
+</tbody>
+</table>
+<h4 id="default-configuation">Default configuation</h4>
+<pre><code class="language-javascript"><span class="hljs-keyword">let</span> defaultConfig = {
+  <span class="hljs-comment">// class of the parent element where the error/success class is added</span>
+  <span class="hljs-attr">classTo</span>: <span class="hljs-string">&#x27;field&#x27;</span>,
+  <span class="hljs-attr">errorClass</span>: <span class="hljs-string">&#x27;error&#x27;</span>,
+  <span class="hljs-attr">successClass</span>: <span class="hljs-string">&#x27;success&#x27;</span>,
+  <span class="hljs-comment">// class of the parent element where error text element is appended</span>
+  <span class="hljs-attr">errorTextParent</span>: <span class="hljs-string">&#x27;field&#x27;</span>,
+  <span class="hljs-comment">// type of element to create for the error text</span>
+  <span class="hljs-attr">errorTextTag</span>: <span class="hljs-string">&#x27;div&#x27;</span>,
+  <span class="hljs-comment">// class of the error text element</span>
+  <span class="hljs-attr">errorTextClass</span>: <span class="hljs-string">&#x27;error-msg&#x27;</span>,
+  <span class="hljs-comment">// enable live validation after first form submission (requires live parameter to be true)</span>
+  <span class="hljs-attr">liveAfterFirstValitation</span>: <span class="hljs-literal">true</span>,
+};
+</code></pre>
+<p><strong>pristine.validate(inputs, silent)</strong></p>
+<p><em>Validate the form or field(s)</em></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inputs</code></td>
+<td>-</td>
+<td><center>✕</center></td>
+<td>When not given, full form is validated. inputs can be one DOM element or a collection of DOM elements returned by <code>document.getElement...</code>, <code>document.querySelector...</code> or even <code>jquery</code> dom</td>
+</tr>
+<tr>
+<td><code>silent</code></td>
+<td><code>false</code></td>
+<td><center>✕</center></td>
+<td>Does not show error error messages when <code>silent</code> is <code>true</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>pristine.addValidator(elem, fn, msg, priority, halt)</strong></p>
+<p><em>Add a custom validator</em></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>elem</code></td>
+<td>-</td>
+<td><center>✔</center></td>
+<td>The dom element where validator is applied to.</td>
+</tr>
+<tr>
+<td><code>fn</code></td>
+<td>-</td>
+<td><center>✔</center></td>
+<td>The function that validates the field. Value of the input field gets passed as the first parameter, and the attribute value (split using comma) as the subsequent parameters. For example, for <code>&lt;input data-pristine-my-validator=&quot;10,20,dhaka&quot; value=&quot;myValue&quot;/&gt;</code>, validator function get called like <code>fn(&quot;myValue&quot;, el, 10, 20, &quot;dhaka&quot;)</code>.</td>
+</tr>
+<tr>
+<td><code>message</code></td>
+<td>-</td>
+<td><center>✔</center></td>
+<td>The message to show when the validation fails. It supports simple templating. <code>${0}</code> for the input's value, <code>${1}</code> and so on are for the attribute values. For the above example, <code>${0}</code> will get replaced by <code>myValue</code>, <code>${1}</code> by <code>10</code>, <code>${2}</code> by <code>20</code>, <code>${3}</code> by <code>dhaka</code>. It can also be a function which should return the error string. The values and inputs are available as function arguments</td>
+</tr>
+<tr>
+<td><code>priority</code></td>
+<td>1</td>
+<td><center>✕</center></td>
+<td>Priority of the validator function. The higher the value, the earlier it gets called when there are multiple validators on one field.</td>
+</tr>
+<tr>
+<td><code>halt</code></td>
+<td><code>false</code></td>
+<td><center>✕</center></td>
+<td>Whether to halt validation on the current field after this validation. When <code>true</code> after validating the current validator, rest of the validators are ignored on the current field.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pristine.addValidator(name, fn, msg, priority, halt)</strong></p>
+<p><em>Add a global custom validator</em></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><center>-</center></td>
+<td><center>✔</center></td>
+<td>A string, the name of the validator, you can then use <code>data-pristine-&lt;NAME&gt;</code> attribute in form fields to apply this validator</td>
+</tr>
+<tr>
+<td><code>....</code></td>
+<td>-</td>
+<td>-</td>
+<td>Other parameters same as above</td>
+</tr>
+</tbody>
+</table>
+<p><strong>pristine.getErrors(input)</strong></p>
+<p><em>Get the errors of the form or a specific field</em></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input</code></td>
+<td>-</td>
+<td><center>✕</center></td>
+<td>When <code>input</code> is given, it returns the errors of that input element, otherwise returns all errors of the form as an object, using input element as key and corresponding errors as value. <code>validate()</code> must be called before expecting this method to return correctly.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>pristine.addError(input, error)</strong></p>
+<p><em>Add A custom error to an input element</em></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input</code></td>
+<td>-</td>
+<td><center>✕</center></td>
+<td>The input element to which the error should be given</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td>-</td>
+<td><center>✔</center></td>
+<td>The error string</td>
+</tr>
+</tbody>
+</table>
+<p><strong>pristine.setGlobalConfig(config)</strong></p>
+<p><em>Set the global configuration</em></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config</code></td>
+<td>-</td>
+<td><center>✔</center></td>
+<td>Set the default configuration globally to use in all forms.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pristine.setLocale(locale)</strong></p>
+<p><em>Set the current locale globally</em></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>locale</code></td>
+<td>-</td>
+<td><center>✔</center></td>
+<td>Error messages on new Pristine forms will be displayed according to this locale</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pristine.addMessages(locale, messages)</strong></p>
+<p><em>Set the current locale globally</em></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Required?</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>locale</code></td>
+<td>-</td>
+<td><center>✔</center></td>
+<td>The corresponding locale</td>
+</tr>
+<tr>
+<td><code>messages</code></td>
+<td>-</td>
+<td><center>✔</center></td>
+<td>Object containing validator names as keys and error texts as values</td>
+</tr>
+</tbody>
+</table>
+<p><strong>pristine.reset()</strong></p>
+<p><em>Reset the errors in the form</em></p>
+<p><strong>pristine.destroy()</strong></p>
+<p><em>Destroy the pristine object</em></p>
+<blockquote>
+<p>The goal of this library is not to provide every possible type of validation and thus becoming a bloat.
+The goal is to provide most common types of validations and a neat way to add custom validators.</p>
+</blockquote>
+<h2 id="license">License</h2>
+<p><a href="http://opensource.org/licenses/MIT">MIT</a></p>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>

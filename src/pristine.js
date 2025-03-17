@@ -1,19 +1,21 @@
 import { lang } from './lang';
 import { tmpl, findAncestor, groupedElemCount, mergeConfig } from './utils';
 
-let defaultConfig = {
-  classTo: 'form-group',
-  errorClass: 'has-danger',
-  successClass: 'has-success',
-  errorTextParent: 'form-group',
+const defaultConfig = {
+  classTo: 'field',
+  errorClass: 'error',
+  successClass: 'success',
+  errorTextParent: 'field',
   errorTextTag: 'div',
-  errorTextClass: 'text-help',
+  errorTextClass: 'error-msg',
   liveAfterFirstValitation: true,
 };
 
 const PRISTINE_ERROR = 'pristine-error';
+
 const SELECTOR =
   'input:not([disabled]):not([type^=hidden]):not([type^=submit]):not([type^=button]):not([data-pristine-ignore]), select, textarea';
+
 const ALLOWED_ATTRIBUTES = [
   'required',
   'min',
@@ -22,6 +24,7 @@ const ALLOWED_ATTRIBUTES = [
   'maxlength',
   'pattern',
 ];
+
 const EMAIL_REGEX =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -29,62 +32,66 @@ const MESSAGE_REGEX = /-message(?:-([a-z]{2}(?:_[A-Z]{2})?))?/; // matches, -mes
 let currentLocale = 'en';
 const validators = {};
 
-const _ = function (name, validator) {
+const _ = (name, validator) => {
   validator.name = name;
   if (validator.priority === undefined) validator.priority = 1;
   validators[name] = validator;
 };
 
-_('text', { fn: (val) => true, priority: 0 });
+_('text', { fn: (val, el) => true, priority: 0 });
 _('required', {
-  fn: function (val) {
-    return this.type === 'radio' || this.type === 'checkbox'
-      ? groupedElemCount(this)
+  fn: (val, el) => {
+    return el.type === 'radio' || el.type === 'checkbox'
+      ? groupedElemCount(el)
       : val !== undefined && val !== '';
   },
   priority: 99,
   halt: true,
 });
-_('email', { fn: (val) => !val || EMAIL_REGEX.test(val) });
-_('number', { fn: (val) => !val || !isNaN(parseFloat(val)), priority: 2 });
-_('integer', { fn: (val) => !val || /^\d+$/.test(val) });
-_('minlength', { fn: (val, length) => !val || val.length >= parseInt(length) });
-_('maxlength', { fn: (val, length) => !val || val.length <= parseInt(length) });
+_('email', { fn: (val, el) => !val || EMAIL_REGEX.test(val) });
+_('number', { fn: (val, el) => !val || !isNaN(parseFloat(val)), priority: 2 });
+_('integer', { fn: (val, el) => !val || /^\d+$/.test(val) });
+_('minlength', {
+  fn: (val, el, length) => !val || val.length >= parseInt(length),
+});
+_('maxlength', {
+  fn: (val, el, length) => !val || val.length <= parseInt(length),
+});
 _('min', {
-  fn: function (val, limit) {
+  fn: (val, el, limit) => {
     return (
       !val ||
-      (this.type === 'checkbox'
-        ? groupedElemCount(this) >= parseInt(limit)
+      (el.type === 'checkbox'
+        ? groupedElemCount(el) >= parseInt(limit)
         : parseFloat(val) >= parseFloat(limit))
     );
   },
 });
 _('max', {
-  fn: function (val, limit) {
+  fn: (val, el, limit) => {
     return (
       !val ||
-      (this.type === 'checkbox'
-        ? groupedElemCount(this) <= parseInt(limit)
+      (el.type === 'checkbox'
+        ? groupedElemCount(el) <= parseInt(limit)
         : parseFloat(val) <= parseFloat(limit))
     );
   },
 });
 _('pattern', {
-  fn: (val, pattern) => {
+  fn: (val, el, pattern) => {
     let m = pattern.match(new RegExp('^/(.*?)/([gimy]*)$'));
     return !val || new RegExp(m[1], m[2]).test(val);
   },
 });
 _('equals', {
-  fn: (val, otherFieldSelector) => {
+  fn: (val, el, otherFieldSelector) => {
     let other = document.querySelector(otherFieldSelector);
     return other && ((!val && !other.value) || other.value === val);
   },
 });
 
-export default function Pristine(form, config, live) {
-  let self = this;
+export default function Pristine(form, config, live = true) {
+  const self = this;
   let wasValidated = false;
 
   init(form, config, live);
@@ -94,61 +101,60 @@ export default function Pristine(form, config, live) {
 
     self.form = form;
     self.config = mergeConfig(config || {}, defaultConfig);
-    self.live = !(live === false);
-    self.fields = Array.from(form.querySelectorAll(SELECTOR)).map(
-      function (input) {
-        let fns = [];
-        let params = {};
-        let messages = {};
+    self.live = live;
 
-        [].forEach.call(input.attributes, function (attr) {
-          if (/^data-pristine-/.test(attr.name)) {
-            let name = attr.name.substr(14);
-            let messageMatch = name.match(MESSAGE_REGEX);
-            if (messageMatch !== null) {
-              let locale =
-                messageMatch[1] === undefined ? 'en' : messageMatch[1];
-              if (!messages.hasOwnProperty(locale)) messages[locale] = {};
-              messages[locale][
-                name.slice(0, name.length - messageMatch[0].length)
-              ] = attr.value;
-              return;
-            }
-            if (name === 'type') name = attr.value;
-            _addValidatorToField(fns, params, name, attr.value);
-          } else if (~ALLOWED_ATTRIBUTES.indexOf(attr.name)) {
-            _addValidatorToField(fns, params, attr.name, attr.value);
-          } else if (attr.name === 'type') {
-            _addValidatorToField(fns, params, attr.value);
+    self.fields = Array.from(form.querySelectorAll(SELECTOR)).map((input) => {
+      const fns = [];
+      const params = {};
+      const messages = {};
+
+      Array.from(input.attributes).forEach((attr) => {
+        if (/^data-pristine-/.test(attr.name)) {
+          const name = attr.name.substr(14);
+          const messageMatch = name.match(MESSAGE_REGEX);
+          if (messageMatch !== null) {
+            const locale =
+              messageMatch[1] === undefined ? 'en' : messageMatch[1];
+            if (!messages.hasOwnProperty(locale)) messages[locale] = {};
+            messages[locale][
+              name.slice(0, name.length - messageMatch[0].length)
+            ] = attr.value;
+            return;
           }
-        });
-
-        fns.sort((a, b) => b.priority - a.priority);
-
-        const listener = function (e) {
-          if (self.config.liveAfterFirstValitation && wasValidated) {
-            self.validate(e.target);
-          } else if (!self.config.liveAfterFirstValitation) {
-            self.validate(e.target);
-          }
-        }.bind(self);
-
-        if (self.live) {
-          input.addEventListener('change', listener);
-          if (!~['radio', 'checkbox'].indexOf(input.getAttribute('type'))) {
-            input.addEventListener('input', listener);
-          }
+          if (name === 'type') name = attr.value;
+          _addValidatorToField(fns, params, name, attr.value);
+        } else if (ALLOWED_ATTRIBUTES.includes(attr.name)) {
+          _addValidatorToField(fns, params, attr.name, attr.value);
+        } else if (attr.name === 'type') {
+          _addValidatorToField(fns, params, attr.value);
         }
+      });
 
-        return (input.pristine = {
-          input,
-          validators: fns,
-          params,
-          messages,
-          self,
-        });
-      }.bind(self)
-    );
+      fns.sort((a, b) => b.priority - a.priority);
+
+      const listener = (e) => {
+        if (self.config.liveAfterFirstValitation && wasValidated) {
+          self.validate(e.target);
+        } else if (!self.config.liveAfterFirstValitation) {
+          self.validate(e.target);
+        }
+      };
+
+      if (self.live) {
+        input.addEventListener('change', listener);
+        if (!['radio', 'checkbox'].includes(input.getAttribute('type'))) {
+          input.addEventListener('input', listener);
+        }
+      }
+
+      return (input.pristine = {
+        input,
+        validators: fns,
+        params,
+        messages,
+        self,
+      });
+    });
   }
 
   function _addValidatorToField(fns, params, name, value) {
@@ -156,7 +162,28 @@ export default function Pristine(form, config, live) {
     if (validator) {
       fns.push(validator);
       if (value) {
-        let valueParams = name === 'pattern' ? [value] : value.split(',');
+        let valueParams;
+
+        // Case 1: Pattern - keep as is
+        if (name === 'pattern') {
+          valueParams = [value];
+        }
+        // Case 2: Check if it's valid JSON
+        else if (value.trim().startsWith('{') || value.trim().startsWith('[')) {
+          try {
+            // Try to parse as JSON
+            const jsonValue = JSON.parse(value);
+            valueParams = Array.isArray(jsonValue) ? jsonValue : [jsonValue];
+          } catch (e) {
+            // If JSON parsing fails, fall back to regular string
+            valueParams = value.split(',');
+          }
+        }
+        // Case 3: Regular string (comma-separated values)
+        else {
+          valueParams = value.split(',');
+        }
+
         valueParams.unshift(null); // placeholder for input's value
         params[name] = valueParams;
       }
@@ -167,9 +194,9 @@ export default function Pristine(form, config, live) {
    * Checks whether the form/input elements are valid
    * @param input => input element(s) or a jquery selector, null for full form validation
    * @param silent => do not show error messages, just return true/false
-   * @returns {boolean} return true when valid false otherwise
+   * @returns {Promise<boolean>} returns a Promise that resolves to true when valid, false otherwise
    */
-  self.validate = function (input = null, silent = false) {
+  self.validate = (input = null, silent = false) => {
     let fields = self.fields;
     if (input) {
       if (input instanceof HTMLElement) {
@@ -177,7 +204,7 @@ export default function Pristine(form, config, live) {
       } else if (
         input instanceof NodeList ||
         input instanceof (window.$ || Array) ||
-        input instanceof Array
+        Array.isArray(input)
       ) {
         fields = Array.from(input).map((el) => el.pristine);
       }
@@ -186,17 +213,40 @@ export default function Pristine(form, config, live) {
     }
 
     let valid = true;
+    const promises = [];
 
     for (let i = 0; fields[i]; i++) {
-      let field = fields[i];
-      if (self.validateField(field)) {
+      const field = fields[i];
+      const result = self.validateField(field);
+
+      // Check if validation returned a promise
+      if (result instanceof Promise) {
+        promises.push(
+          result.then((isValid) => {
+            if (isValid) {
+              !silent && _showSuccess(field);
+            } else {
+              valid = false;
+              !silent && _showError(field);
+            }
+            return isValid;
+          })
+        );
+      } else if (result) {
         !silent && _showSuccess(field);
       } else {
         valid = false;
         !silent && _showError(field);
       }
     }
-    return valid;
+
+    // If we have async validators, wait for them to complete
+    if (promises.length > 0) {
+      return Promise.all(promises).then(() => valid);
+    }
+
+    // Otherwise return a resolved promise with the result
+    return Promise.resolve(valid);
   };
 
   /***
@@ -225,52 +275,92 @@ export default function Pristine(form, config, live) {
    * Validates a single field, all validator functions are called and error messages are generated
    * when a validator fails
    * @param field
-   * @returns {boolean}
+   * @returns {boolean|Promise<boolean>} returns true/false for sync validation or a Promise for async validation
    * @private
    */
   self.validateField = function (field) {
     let errors = [];
     let valid = true;
+    let promises = [];
+
     for (let i = 0; field.validators[i]; i++) {
       let validator = field.validators[i];
       let params = field.params[validator.name]
         ? field.params[validator.name]
         : [];
       params[0] = field.input.value;
-      if (!validator.fn.apply(field.input, params)) {
-        valid = false;
 
-        if (typeof validator.msg === 'function') {
-          errors.push(validator.msg(field.input.value, params));
-        } else if (typeof validator.msg === 'string') {
-          errors.push(tmpl.apply(validator.msg, params));
-        } else if (
-          validator.msg === Object(validator.msg) &&
-          validator.msg[currentLocale]
-        ) {
-          // typeof generates unnecessary babel code
-          errors.push(tmpl.apply(validator.msg[currentLocale], params));
-        } else if (
-          field.messages[currentLocale] &&
-          field.messages[currentLocale][validator.name]
-        ) {
-          errors.push(
-            tmpl.apply(field.messages[currentLocale][validator.name], params)
-          );
-        } else if (lang[currentLocale] && lang[currentLocale][validator.name]) {
-          errors.push(tmpl.apply(lang[currentLocale][validator.name], params));
-        } else {
-          errors.push(tmpl.apply(lang[currentLocale].default, params));
-        }
+      // Insert the element as the second parameter
+      if (params.length > 1) {
+        // Shift all parameters to make room for the element
+        params.splice(1, 0, field.input);
+      } else {
+        params.push(field.input);
+      }
+
+      let result = validator.fn.apply(null, params);
+
+      // Check if the validator returns a Promise
+      if (result instanceof Promise) {
+        // For async validators, add to promises array to handle later
+        promises.push(
+          result.then((isValid) => {
+            if (!isValid) {
+              valid = false;
+              let error = _getErrorMessage(field, validator, params);
+              errors.push(error);
+            }
+            return isValid;
+          })
+        );
+      } else if (!result) {
+        // For synchronous validators that fail
+        valid = false;
+        let error = _getErrorMessage(field, validator, params);
+        errors.push(error);
 
         if (validator.halt === true) {
           break;
         }
       }
     }
+
+    // If we have async validators
+    if (promises.length > 0) {
+      // Return a promise that resolves when all validations are complete
+      return Promise.all(promises).then(() => {
+        field.errors = errors;
+        return valid && errors.length === 0;
+      });
+    }
+
+    // For synchronous validation only
     field.errors = errors;
     return valid;
   };
+
+  // Helper function to get error message
+  function _getErrorMessage(field, validator, params) {
+    if (typeof validator.msg === 'function') {
+      return validator.msg(field.input.value, params);
+    } else if (typeof validator.msg === 'string') {
+      return tmpl.apply(validator.msg, params);
+    } else if (
+      validator.msg === Object(validator.msg) &&
+      validator.msg[currentLocale]
+    ) {
+      return tmpl.apply(validator.msg[currentLocale], params);
+    } else if (
+      field.messages[currentLocale] &&
+      field.messages[currentLocale][validator.name]
+    ) {
+      return tmpl.apply(field.messages[currentLocale][validator.name], params);
+    } else if (lang[currentLocale] && lang[currentLocale][validator.name]) {
+      return tmpl.apply(lang[currentLocale][validator.name], params);
+    } else {
+      return tmpl.apply(lang[currentLocale].default, params);
+    }
+  }
 
   /***
    * Add a validator to a specific dom element in a form
