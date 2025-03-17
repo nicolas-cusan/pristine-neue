@@ -296,6 +296,14 @@ npm run test:coverage
 
 For more details about the test suite, see the [tests/README.md](tests/README.md) file.
 
+## Continuous Integration
+
+Pristine Neue uses GitHub Actions for continuous integration. The following workflows are set up:
+
+- **Run Tests**: Runs the test suite on every push and pull request.
+- **Deploy Documentation**: Builds and deploys the documentation to GitHub Pages when changes are pushed to the master branch.
+- **Publish Package**: Publishes the package to npm when a new release is created.
+
 ## Recent Fixes
 
 The following issues have been fixed in the latest version:
