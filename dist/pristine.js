@@ -27,7 +27,7 @@ function C(t) {
     'input[name="' + t.getAttribute("name") + '"]:checked'
   ).length;
 }
-const R = {
+let R = {
   classTo: "field",
   errorClass: "error",
   successClass: "success",
@@ -35,7 +35,8 @@ const R = {
   errorTextTag: "div",
   errorTextClass: "error-msg",
   liveAfterFirstValitation: !0
-}, L = "pristine-error", N = "input:not([disabled]):not([type^=hidden]):not([type^=submit]):not([type^=button]):not([data-pristine-ignore]), select, textarea", O = [
+};
+const L = "pristine-error", N = "input:not([disabled]):not([type^=hidden]):not([type^=submit]):not([type^=button]):not([data-pristine-ignore]), select, textarea", O = [
   "required",
   "min",
   "max",
