@@ -20,7 +20,9 @@ function I(s, l) {
   return s;
 }
 function E(s, ...l) {
-  return typeof s != "string" ? "" : s.replace(/\${(\d+)}/g, (o, r) => l[parseInt(r)] !== void 0 ? l[parseInt(r)] : o);
+  if (typeof s != "string") return "";
+  const o = [...l].shift;
+  return s.replace(/\${(\d+)}/g, (r, y) => o[parseInt(y)] !== void 0 ? o[parseInt(y)] : r);
 }
 function C(s) {
   return s.pristine.self.form.querySelectorAll(

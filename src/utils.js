@@ -5,8 +5,11 @@ export function findAncestor(el, cls) {
 
 export function tmpl(str, ...args) {
   if (typeof str !== 'string') return '';
+  const replacements = [...args].shift;
   return str.replace(/\${(\d+)}/g, (match, index) => {
-    return args[parseInt(index)] !== undefined ? args[parseInt(index)] : match;
+    return replacements[parseInt(index)] !== undefined
+      ? replacements[parseInt(index)]
+      : match;
   });
 }
 
