@@ -1,6 +1,6 @@
 {
   "name": "pristine-neue",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "A tiny vanilla javascript form validation library",
   "main": "dist/pristine.umd.cjs",
   "module": "dist/pristine.js",
