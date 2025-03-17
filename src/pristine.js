@@ -1,7 +1,7 @@
 import { lang } from './lang';
 import { tmpl, findAncestor, groupedElemCount } from './utils';
 
-const defaultConfig = {
+let defaultConfig = {
   classTo: 'field',
   errorClass: 'error',
   successClass: 'success',
