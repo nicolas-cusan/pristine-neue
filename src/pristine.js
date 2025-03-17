@@ -1,5 +1,5 @@
 import { lang } from './lang';
-import { tmpl, findAncestor, groupedElemCount, mergeConfig } from './utils';
+import { tmpl, findAncestor, groupedElemCount } from './utils';
 
 const defaultConfig = {
   classTo: 'field',
@@ -79,13 +79,37 @@ _('max', {
 });
 _('pattern', {
   fn: (val, el, pattern) => {
-    let m = pattern.match(new RegExp('^/(.*?)/([gimy]*)$'));
-    return !val || new RegExp(m[1], m[2]).test(val);
+    if (!val) return true;
+
+    // Check if pattern is already a regex pattern with slashes
+    let m =
+      typeof pattern === 'string'
+        ? pattern.match(new RegExp('^/(.*?)/([gimy]*)$'))
+        : null;
+
+    if (m) {
+      // It's a regex pattern with slashes, parse it
+      return new RegExp(m[1], m[2]).test(val);
+    } else {
+      // It's a regular pattern string, use it directly
+      return new RegExp(pattern).test(val);
+    }
   },
 });
 _('equals', {
   fn: (val, el, otherFieldSelector) => {
-    let other = document.querySelector(otherFieldSelector);
+    let other;
+
+    // Handle both selector strings and direct element references
+    if (
+      typeof otherFieldSelector === 'string' &&
+      otherFieldSelector.startsWith('#')
+    ) {
+      other = document.querySelector(otherFieldSelector);
+    } else if (otherFieldSelector instanceof HTMLElement) {
+      other = otherFieldSelector;
+    }
+
     return other && ((!val && !other.value) || other.value === val);
   },
 });
@@ -100,8 +124,8 @@ export default function Pristine(form, config, live = true) {
     form.setAttribute('novalidate', 'true');
 
     self.form = form;
-    self.config = mergeConfig(config || {}, defaultConfig);
-    self.live = live;
+    self.config = { ...defaultConfig, ...(config || {}) };
+    self.live = !(live === false);
 
     self.fields = Array.from(form.querySelectorAll(SELECTOR)).map((input) => {
       const fns = [];
@@ -110,7 +134,7 @@ export default function Pristine(form, config, live = true) {
 
       Array.from(input.attributes).forEach((attr) => {
         if (/^data-pristine-/.test(attr.name)) {
-          const name = attr.name.substr(14);
+          let name = attr.name.substr(14);
           const messageMatch = name.match(MESSAGE_REGEX);
           if (messageMatch !== null) {
             const locale =
@@ -121,8 +145,11 @@ export default function Pristine(form, config, live = true) {
             ] = attr.value;
             return;
           }
-          if (name === 'type') name = attr.value;
-          _addValidatorToField(fns, params, name, attr.value);
+          let attrValue = attr.value;
+          if (name === 'type') {
+            name = attrValue;
+          }
+          _addValidatorToField(fns, params, name, attrValue);
         } else if (ALLOWED_ATTRIBUTES.includes(attr.name)) {
           _addValidatorToField(fns, params, attr.name, attr.value);
         } else if (attr.name === 'type') {
@@ -344,21 +371,21 @@ export default function Pristine(form, config, live = true) {
     if (typeof validator.msg === 'function') {
       return validator.msg(field.input.value, params);
     } else if (typeof validator.msg === 'string') {
-      return tmpl.apply(validator.msg, params);
+      return tmpl(validator.msg, ...params);
     } else if (
       validator.msg === Object(validator.msg) &&
       validator.msg[currentLocale]
     ) {
-      return tmpl.apply(validator.msg[currentLocale], params);
+      return tmpl(validator.msg[currentLocale], ...params);
     } else if (
       field.messages[currentLocale] &&
       field.messages[currentLocale][validator.name]
     ) {
-      return tmpl.apply(field.messages[currentLocale][validator.name], params);
+      return tmpl(field.messages[currentLocale][validator.name], ...params);
     } else if (lang[currentLocale] && lang[currentLocale][validator.name]) {
-      return tmpl.apply(lang[currentLocale][validator.name], params);
+      return tmpl(lang[currentLocale][validator.name], ...params);
     } else {
-      return tmpl.apply(lang[currentLocale].default, params);
+      return tmpl(lang[currentLocale].default, ...params);
     }
   }
 

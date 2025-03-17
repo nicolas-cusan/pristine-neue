@@ -276,3 +276,38 @@ _Destroy the pristine object_
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
+
+## Testing
+
+Pristine Neue uses Vitest for testing. The test suite covers core functionality, built-in validators, custom validators, and localization features.
+
+### Running Tests
+
+```sh
+# Run all tests once
+npm test
+
+# Run tests in watch mode (for development)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+For more details about the test suite, see the [tests/README.md](tests/README.md) file.
+
+## Recent Fixes
+
+The following issues have been fixed in the latest version:
+
+1. **Template String Replacement**: Fixed the template string replacement in error messages to properly handle template variables like `${0}`, `${1}`, etc.
+
+2. **Constant Variable Assignment**: Fixed an issue where a constant variable was being reassigned, causing errors in strict mode.
+
+3. **Pattern Validator**: Improved the pattern validator to handle both regex patterns with slashes and regular pattern strings.
+
+4. **Equals Validator**: Enhanced the equals validator to handle both selector strings and direct element references.
+
+5. **Validator Function Parameters**: Fixed how validator function parameters are passed to ensure proper validation.
+
+These fixes ensure that the library works correctly in modern JavaScript environments and provides better error handling and validation capabilities.
