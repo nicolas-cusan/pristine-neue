@@ -368,43 +368,39 @@ export default function Pristine(form, config, live = true) {
 
   // Helper function to get error message
   function _getErrorMessage(field, validator, params) {
-    let errorMessage = null;
-
     // Try to get the error message from various sources in order of priority
     if (typeof validator.msg === 'function') {
-      errorMessage = validator.msg(field.input.value, params);
-    } else if (typeof validator.msg === 'string') {
-      errorMessage = tmpl(validator.msg, ...params);
-    } else if (
+      return validator.msg(field.input.value, params, currentLocale);
+    }
+
+    if (
       validator.msg === Object(validator.msg) &&
       validator.msg[currentLocale]
     ) {
-      errorMessage = tmpl(validator.msg[currentLocale], ...params);
-    } else if (
+      return tmpl(validator.msg[currentLocale], ...params);
+    }
+
+    if (
       field.messages[currentLocale] &&
       field.messages[currentLocale][validator.name]
     ) {
-      errorMessage = tmpl(
-        field.messages[currentLocale][validator.name],
-        ...params
-      );
-    } else if (lang[currentLocale] && lang[currentLocale][validator.name]) {
-      errorMessage = tmpl(lang[currentLocale][validator.name], ...params);
-    } else {
-      // If no specific message is found, use the default message or a fallback
-      if (lang[currentLocale] && lang[currentLocale].default) {
-        errorMessage = tmpl(lang[currentLocale].default, ...params);
-      } else {
-        errorMessage = `Validation failed for ${validator.name}`;
-      }
+      return tmpl(field.messages[currentLocale][validator.name], ...params);
+    }
+
+    if (lang[currentLocale] && lang[currentLocale][validator.name]) {
+      return tmpl(lang[currentLocale][validator.name], ...params);
+    }
+
+    if (typeof validator.msg === 'string') {
+      return tmpl(validator.msg, ...params);
+    }
+    // If no specific message is found, use the default message or a fallback
+    if (lang[currentLocale] && lang[currentLocale].default) {
+      return tmpl(lang[currentLocale].default, ...params);
     }
 
     // Ensure we always return a non-empty string
-    if (!errorMessage || errorMessage.trim() === '') {
-      return `Validation failed for ${validator.name}`;
-    }
-
-    return errorMessage;
+    return `Validation failed for ${validator.name}`;
   }
 
   /***

@@ -15,18 +15,18 @@ const h = {
     default: "Please enter a correct value"
   }
 };
-function I(s, l) {
-  for (; (s = s.parentElement) && !s.classList.contains(l); ) ;
-  return s;
+function S(t, l) {
+  for (; (t = t.parentElement) && !t.classList.contains(l); ) ;
+  return t;
 }
-function E(s, ...l) {
-  if (typeof s != "string") return "";
+function E(t, ...l) {
+  if (typeof t != "string") return "";
   const o = [...l].shift;
-  return s.replace(/\${(\d+)}/g, (r, y) => o[parseInt(y)] !== void 0 ? o[parseInt(y)] : r);
+  return t.replace(/\${(\d+)}/g, (r, y) => o[parseInt(y)] !== void 0 ? o[parseInt(y)] : r);
 }
-function C(s) {
-  return s.pristine.self.form.querySelectorAll(
-    'input[name="' + s.getAttribute("name") + '"]:checked'
+function C(t) {
+  return t.pristine.self.form.querySelectorAll(
+    'input[name="' + t.getAttribute("name") + '"]:checked'
   ).length;
 }
 let R = {
@@ -38,63 +38,63 @@ let R = {
   errorTextClass: "error-msg",
   liveAfterFirstValitation: !0
 };
-const L = "pristine-error", S = "input:not([disabled]):not([type^=hidden]):not([type^=submit]):not([type^=button]):not([data-pristine-ignore]), select, textarea", N = [
+const L = "pristine-error", $ = "input:not([disabled]):not([type^=hidden]):not([type^=submit]):not([type^=button]):not([data-pristine-ignore]), select, textarea", N = [
   "required",
   "min",
   "max",
   "minlength",
   "maxlength",
   "pattern"
-], O = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, V = /-message(?:-([a-z]{2}(?:_[A-Z]{2})?))?/;
+], O = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, F = /-message(?:-([a-z]{2}(?:_[A-Z]{2})?))?/;
 let m = "en";
-const _ = {}, d = (s, l) => {
-  l.name = s, l.priority === void 0 && (l.priority = 1), _[s] = l;
+const _ = {}, d = (t, l) => {
+  l.name = t, l.priority === void 0 && (l.priority = 1), _[t] = l;
 };
-d("text", { fn: (s, l) => !0, priority: 0 });
+d("text", { fn: (t, l) => !0, priority: 0 });
 d("required", {
-  fn: (s, l) => l.type === "radio" || l.type === "checkbox" ? C(l) : s !== void 0 && s !== "",
+  fn: (t, l) => l.type === "radio" || l.type === "checkbox" ? C(l) : t !== void 0 && t !== "",
   priority: 99,
   halt: !0
 });
-d("email", { fn: (s, l) => !s || O.test(s) });
-d("number", { fn: (s, l) => !s || !isNaN(parseFloat(s)), priority: 2 });
-d("integer", { fn: (s, l) => !s || /^\d+$/.test(s) });
+d("email", { fn: (t, l) => !t || O.test(t) });
+d("number", { fn: (t, l) => !t || !isNaN(parseFloat(t)), priority: 2 });
+d("integer", { fn: (t, l) => !t || /^\d+$/.test(t) });
 d("minlength", {
-  fn: (s, l, o) => !s || s.length >= parseInt(o)
+  fn: (t, l, o) => !t || t.length >= parseInt(o)
 });
 d("maxlength", {
-  fn: (s, l, o) => !s || s.length <= parseInt(o)
+  fn: (t, l, o) => !t || t.length <= parseInt(o)
 });
 d("min", {
-  fn: (s, l, o) => !s || (l.type === "checkbox" ? C(l) >= parseInt(o) : parseFloat(s) >= parseFloat(o))
+  fn: (t, l, o) => !t || (l.type === "checkbox" ? C(l) >= parseInt(o) : parseFloat(t) >= parseFloat(o))
 });
 d("max", {
-  fn: (s, l, o) => !s || (l.type === "checkbox" ? C(l) <= parseInt(o) : parseFloat(s) <= parseFloat(o))
+  fn: (t, l, o) => !t || (l.type === "checkbox" ? C(l) <= parseInt(o) : parseFloat(t) <= parseFloat(o))
 });
 d("pattern", {
-  fn: (s, l, o) => {
-    if (!s) return !0;
+  fn: (t, l, o) => {
+    if (!t) return !0;
     let r = typeof o == "string" ? o.match(new RegExp("^/(.*?)/([gimy]*)$")) : null;
-    return r ? new RegExp(r[1], r[2]).test(s) : new RegExp(o).test(s);
+    return r ? new RegExp(r[1], r[2]).test(t) : new RegExp(o).test(t);
   }
 });
 d("equals", {
-  fn: (s, l, o) => {
+  fn: (t, l, o) => {
     let r;
-    return typeof o == "string" && o.startsWith("#") ? r = document.querySelector(o) : o instanceof HTMLElement && (r = o), r && (!s && !r.value || r.value === s);
+    return typeof o == "string" && o.startsWith("#") ? r = document.querySelector(o) : o instanceof HTMLElement && (r = o), r && (!t && !r.value || r.value === t);
   }
 });
-function q(s, l, o = !0) {
+function q(t, l, o = !0) {
   const r = this;
   let y = !1;
-  $(s, l, o);
-  function $(e, n, i) {
-    e.setAttribute("novalidate", "true"), r.form = e, r.config = { ...R, ...n || {} }, r.live = i !== !1, r.fields = Array.from(e.querySelectorAll(S)).map((t) => {
+  I(t, l, o);
+  function I(e, s, i) {
+    e.setAttribute("novalidate", "true"), r.form = e, r.config = { ...R, ...s || {} }, r.live = i !== !1, r.fields = Array.from(e.querySelectorAll($)).map((n) => {
       const c = [], a = {}, f = {};
-      Array.from(t.attributes).forEach((u) => {
+      Array.from(n.attributes).forEach((u) => {
         if (/^data-pristine-/.test(u.name)) {
           let p = u.name.substr(14);
-          const T = p.match(V);
+          const T = p.match(F);
           if (T !== null) {
             const b = T[1] === void 0 ? "en" : T[1];
             f.hasOwnProperty(b) || (f[b] = {}), f[b][p.slice(0, p.length - T[0].length)] = u.value;
@@ -107,8 +107,8 @@ function q(s, l, o = !0) {
       const g = (u) => {
         r.config.liveAfterFirstValitation && y ? r.validate(u.target) : r.config.liveAfterFirstValitation || r.validate(u.target);
       };
-      return r.live && (t.addEventListener("change", g), ["radio", "checkbox"].includes(t.getAttribute("type")) || t.addEventListener("input", g)), t.pristine = {
-        input: t,
+      return r.live && (n.addEventListener("change", g), ["radio", "checkbox"].includes(n.getAttribute("type")) || n.addEventListener("input", g)), n.pristine = {
+        input: n,
         validators: c,
         params: a,
         messages: f,
@@ -116,59 +116,59 @@ function q(s, l, o = !0) {
       };
     });
   }
-  function x(e, n, i, t) {
+  function x(e, s, i, n) {
     let c = _[i];
-    if (c && (e.push(c), t)) {
+    if (c && (e.push(c), n)) {
       let a;
       if (i === "pattern")
-        a = [t];
-      else if (t.trim().startsWith("{") || t.trim().startsWith("["))
+        a = [n];
+      else if (n.trim().startsWith("{") || n.trim().startsWith("["))
         try {
-          const f = JSON.parse(t);
+          const f = JSON.parse(n);
           a = Array.isArray(f) ? f : [f];
         } catch {
-          a = t.split(",");
+          a = n.split(",");
         }
       else
-        a = t.split(",");
-      a.unshift(null), n[i] = a;
+        a = n.split(",");
+      a.unshift(null), s[i] = a;
     }
   }
-  r.validate = (e = null, n = !1) => {
+  r.validate = (e = null, s = !1) => {
     let i = r.fields;
     e ? e instanceof HTMLElement ? i = [e.pristine] : (e instanceof NodeList || e instanceof (window.$ || Array) || Array.isArray(e)) && (i = Array.from(e).map((a) => a.pristine)) : y = !0;
-    let t = !0;
+    let n = !0;
     const c = [];
     for (let a = 0; i[a]; a++) {
       const f = i[a], g = r.validateField(f);
       g instanceof Promise ? c.push(
-        g.then((u) => (u ? !n && w(f) : (t = !1, !n && A(f)), u))
-      ) : g ? !n && w(f) : (t = !1, !n && A(f));
+        g.then((u) => (u ? !s && w(f) : (n = !1, !s && A(f)), u))
+      ) : g ? !s && w(f) : (n = !1, !s && A(f));
     }
-    return c.length > 0 ? Promise.all(c).then(() => t) : Promise.resolve(t);
+    return c.length > 0 ? Promise.all(c).then(() => n) : Promise.resolve(n);
   }, r.getErrors = function(e) {
     if (!e) {
-      let n = [];
+      let s = [];
       for (let i = 0; i < r.fields.length; i++) {
-        let t = r.fields[i];
-        t.errors.length && n.push({ input: t.input, errors: t.errors });
+        let n = r.fields[i];
+        n.errors.length && s.push({ input: n.input, errors: n.errors });
       }
-      return n;
+      return s;
     }
     return e.tagName && e.tagName.toLowerCase() === "select" ? e.pristine.errors : e.length ? e[0].pristine.errors : e.pristine.errors;
   }, r.validateField = function(e) {
-    let n = [], i = !0, t = [];
+    let s = [], i = !0, n = [];
     for (let c = 0; e.validators[c]; c++) {
       let a = e.validators[c], f = e.params[a.name] ? [...e.params[a.name]] : [];
       f[0] = e.input.value, f.length > 1 ? f.splice(1, 0, e.input) : f.push(e.input);
       let g = a.fn.apply(null, f);
       if (g instanceof Promise)
-        t.push(
+        n.push(
           g.then((u) => {
             if (!u) {
               i = !1;
               let p = v(e, a, f);
-              n.push(p);
+              s.push(p);
             }
             return u;
           })
@@ -176,49 +176,45 @@ function q(s, l, o = !0) {
       else if (!g) {
         i = !1;
         let u = v(e, a, f);
-        if (n.push(u), a.halt === !0)
+        if (s.push(u), a.halt === !0)
           break;
       }
     }
-    return t.length > 0 ? Promise.all(t).then(() => (e.errors = n, i && n.length === 0)) : (e.errors = n, i);
+    return n.length > 0 ? Promise.all(n).then(() => (e.errors = s, i && s.length === 0)) : (e.errors = s, i);
   };
-  function v(e, n, i) {
-    let t = null;
-    return typeof n.msg == "function" ? t = n.msg(e.input.value, i) : typeof n.msg == "string" ? t = E(n.msg, ...i) : n.msg === Object(n.msg) && n.msg[m] ? t = E(n.msg[m], ...i) : e.messages[m] && e.messages[m][n.name] ? t = E(
-      e.messages[m][n.name],
-      ...i
-    ) : h[m] && h[m][n.name] ? t = E(h[m][n.name], ...i) : h[m] && h[m].default ? t = E(h[m].default, ...i) : t = `Validation failed for ${n.name}`, !t || t.trim() === "" ? `Validation failed for ${n.name}` : t;
+  function v(e, s, i) {
+    return typeof s.msg == "function" ? s.msg(e.input.value, i, m) : s.msg === Object(s.msg) && s.msg[m] ? E(s.msg[m], ...i) : e.messages[m] && e.messages[m][s.name] ? E(e.messages[m][s.name], ...i) : h[m] && h[m][s.name] ? E(h[m][s.name], ...i) : typeof s.msg == "string" ? E(s.msg, ...i) : h[m] && h[m].default ? E(h[m].default, ...i) : `Validation failed for ${s.name}`;
   }
-  r.addValidator = function(e, n, i, t, c) {
-    e instanceof HTMLElement ? (e.pristine.validators.push({ fn: n, msg: i, priority: t, halt: c }), e.pristine.validators.sort((a, f) => f.priority - a.priority)) : console.warn("The parameter elem must be a dom element");
+  r.addValidator = function(e, s, i, n, c) {
+    e instanceof HTMLElement ? (e.pristine.validators.push({ fn: s, msg: i, priority: n, halt: c }), e.pristine.validators.sort((a, f) => f.priority - a.priority)) : console.warn("The parameter elem must be a dom element");
   };
   function P(e) {
     if (e.errorElements)
       return e.errorElements;
-    let n = I(e.input, r.config.classTo), i = null, t = null;
+    let s = S(e.input, r.config.classTo), i = null, n = null;
     if (r.config.classTo === r.config.errorTextParent)
-      i = n;
+      i = s;
     else {
-      if (!n) return [null, null];
-      i = n.querySelector(
+      if (!s) return [null, null];
+      i = s.querySelector(
         "." + r.config.errorTextParent
       );
     }
-    return i && (t = i.querySelector("." + L), t || (t = document.createElement(r.config.errorTextTag), t.className = L + " " + r.config.errorTextClass, i.appendChild(t), t.pristineDisplay = t.style.display)), e.errorElements = [n, t];
+    return i && (n = i.querySelector("." + L), n || (n = document.createElement(r.config.errorTextTag), n.className = L + " " + r.config.errorTextClass, i.appendChild(n), n.pristineDisplay = n.style.display)), e.errorElements = [s, n];
   }
   function A(e) {
-    let n = P(e), i = n[0], t = n[1];
-    i && (i.classList.remove(r.config.successClass), i.classList.add(r.config.errorClass)), t && (t.innerHTML = e.errors.join("<br/>"), t.style.display = t.pristineDisplay || "");
+    let s = P(e), i = s[0], n = s[1];
+    i && (i.classList.remove(r.config.successClass), i.classList.add(r.config.errorClass)), n && (n.innerHTML = e.errors.join("<br/>"), n.style.display = n.pristineDisplay || "");
   }
-  r.addError = function(e, n) {
-    e = e.length ? e[0] : e, e.pristine.errors.push(n), A(e.pristine);
+  r.addError = function(e, s) {
+    e = e.length ? e[0] : e, e.pristine.errors.push(s), A(e.pristine);
   }, r.removeError = function(e) {
-    let n = P(e), i = n[0], t = n[1];
-    return i && (i.classList.remove(r.config.errorClass), i.classList.remove(r.config.successClass)), t && (t.innerHTML = "", t.style.display = "none"), n;
+    let s = P(e), i = s[0], n = s[1];
+    return i && (i.classList.remove(r.config.errorClass), i.classList.remove(r.config.successClass)), n && (n.innerHTML = "", n.style.display = "none"), s;
   };
   function w(e) {
-    let n = r.removeError(e)[0];
-    n && n.classList.add(r.config.successClass);
+    let s = r.removeError(e)[0];
+    s && s.classList.add(r.config.successClass);
   }
   return r.reset = function() {
     for (let e = 0; r.fields[e]; e++)
@@ -238,17 +234,17 @@ function q(s, l, o = !0) {
     R = e;
   }, r;
 }
-q.addValidator = function(s, l, o, r, y) {
-  d(s, { fn: l, msg: o, priority: r, halt: y });
+q.addValidator = function(t, l, o, r, y) {
+  d(t, { fn: l, msg: o, priority: r, halt: y });
 };
-q.addMessages = function(s, l) {
-  let o = h.hasOwnProperty(s) ? h[s] : h[s] = {};
+q.addMessages = function(t, l) {
+  let o = h.hasOwnProperty(t) ? h[t] : h[t] = {};
   Object.keys(l).forEach(function(r, y) {
     o[r] = l[r];
   });
 };
-q.setLocale = function(s) {
-  m = s;
+q.setLocale = function(t) {
+  m = t;
 };
 export {
   q as default
