@@ -15,7 +15,7 @@ const h = {
     default: "Please enter a correct value"
   }
 };
-function S(t, l) {
+function I(t, l) {
   for (; (t = t.parentElement) && !t.classList.contains(l); ) ;
   return t;
 }
@@ -25,11 +25,12 @@ function E(t, ...l) {
   return t.replace(/\${(\d+)}/g, (r, y) => o[parseInt(y)] !== void 0 ? o[parseInt(y)] : r);
 }
 function C(t) {
+  const o = t.getAttribute("name").replace(/\[\d*\]$/, "");
   return t.pristine.self.form.querySelectorAll(
-    'input[name="' + t.getAttribute("name") + '"]:checked'
+    `input[name^="${o}["]:checked, input[name="${o}"]:checked`
   ).length;
 }
-let R = {
+let M = {
   classTo: "field",
   errorClass: "error",
   successClass: "success",
@@ -38,7 +39,7 @@ let R = {
   errorTextClass: "error-msg",
   liveAfterFirstValitation: !0
 };
-const L = "pristine-error", $ = "input:not([disabled]):not([type^=hidden]):not([type^=submit]):not([type^=button]):not([data-pristine-ignore]), select, textarea", N = [
+const L = "pristine-error", N = "input:not([disabled]):not([type^=hidden]):not([type^=submit]):not([type^=button]):not([data-pristine-ignore]), select, textarea", S = [
   "required",
   "min",
   "max",
@@ -47,8 +48,8 @@ const L = "pristine-error", $ = "input:not([disabled]):not([type^=hidden]):not([
   "pattern"
 ], O = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, F = /-message(?:-([a-z]{2}(?:_[A-Z]{2})?))?/;
 let m = "en";
-const _ = {}, d = (t, l) => {
-  l.name = t, l.priority === void 0 && (l.priority = 1), _[t] = l;
+const R = {}, d = (t, l) => {
+  l.name = t, l.priority === void 0 && (l.priority = 1), R[t] = l;
 };
 d("text", { fn: (t, l) => !0, priority: 0 });
 d("required", {
@@ -87,27 +88,27 @@ d("equals", {
 function q(t, l, o = !0) {
   const r = this;
   let y = !1;
-  I(t, l, o);
-  function I(e, s, i) {
-    e.setAttribute("novalidate", "true"), r.form = e, r.config = { ...R, ...s || {} }, r.live = i !== !1, r.fields = Array.from(e.querySelectorAll($)).map((n) => {
+  _(t, l, o);
+  function _(e, s, i) {
+    e.setAttribute("novalidate", "true"), r.form = e, r.config = { ...M, ...s || {} }, r.live = i !== !1, r.fields = Array.from(e.querySelectorAll(N)).map((n) => {
       const c = [], a = {}, f = {};
       Array.from(n.attributes).forEach((u) => {
         if (/^data-pristine-/.test(u.name)) {
-          let p = u.name.substr(14);
-          const T = p.match(F);
+          let g = u.name.substr(14);
+          const T = g.match(F);
           if (T !== null) {
             const b = T[1] === void 0 ? "en" : T[1];
-            f.hasOwnProperty(b) || (f[b] = {}), f[b][p.slice(0, p.length - T[0].length)] = u.value;
+            f.hasOwnProperty(b) || (f[b] = {}), f[b][g.slice(0, g.length - T[0].length)] = u.value;
             return;
           }
-          let M = u.value;
-          p === "type" && (p = M), x(c, a, p, M);
-        } else N.includes(u.name) ? x(c, a, u.name, u.value) : u.name === "type" && x(c, a, u.value);
-      }), c.sort((u, p) => p.priority - u.priority);
-      const g = (u) => {
+          let $ = u.value;
+          g === "type" && (g = $), x(c, a, g, $);
+        } else S.includes(u.name) ? x(c, a, u.name, u.value) : u.name === "type" && x(c, a, u.value);
+      }), c.sort((u, g) => g.priority - u.priority);
+      const p = (u) => {
         r.config.liveAfterFirstValitation && y ? r.validate(u.target) : r.config.liveAfterFirstValitation || r.validate(u.target);
       };
-      return r.live && (n.addEventListener("change", g), ["radio", "checkbox"].includes(n.getAttribute("type")) || n.addEventListener("input", g)), n.pristine = {
+      return r.live && (n.addEventListener("change", p), ["radio", "checkbox"].includes(n.getAttribute("type")) || n.addEventListener("input", p)), n.pristine = {
         input: n,
         validators: c,
         params: a,
@@ -117,7 +118,7 @@ function q(t, l, o = !0) {
     });
   }
   function x(e, s, i, n) {
-    let c = _[i];
+    let c = R[i];
     if (c && (e.push(c), n)) {
       let a;
       if (i === "pattern")
@@ -140,10 +141,10 @@ function q(t, l, o = !0) {
     let n = !0;
     const c = [];
     for (let a = 0; i[a]; a++) {
-      const f = i[a], g = r.validateField(f);
-      g instanceof Promise ? c.push(
-        g.then((u) => (u ? !s && w(f) : (n = !1, !s && A(f)), u))
-      ) : g ? !s && w(f) : (n = !1, !s && A(f));
+      const f = i[a], p = r.validateField(f);
+      p instanceof Promise ? c.push(
+        p.then((u) => (u ? !s && w(f) : (n = !1, !s && A(f)), u))
+      ) : p ? !s && w(f) : (n = !1, !s && A(f));
     }
     return c.length > 0 ? Promise.all(c).then(() => n) : Promise.resolve(n);
   }, r.getErrors = function(e) {
@@ -161,19 +162,19 @@ function q(t, l, o = !0) {
     for (let c = 0; e.validators[c]; c++) {
       let a = e.validators[c], f = e.params[a.name] ? [...e.params[a.name]] : [];
       f[0] = e.input.value, f.length > 1 ? f.splice(1, 0, e.input) : f.push(e.input);
-      let g = a.fn.apply(null, f);
-      if (g instanceof Promise)
+      let p = a.fn.apply(null, f);
+      if (p instanceof Promise)
         n.push(
-          g.then((u) => {
+          p.then((u) => {
             if (!u) {
               i = !1;
-              let p = v(e, a, f);
-              s.push(p);
+              let g = v(e, a, f);
+              s.push(g);
             }
             return u;
           })
         );
-      else if (!g) {
+      else if (!p) {
         i = !1;
         let u = v(e, a, f);
         if (s.push(u), a.halt === !0)
@@ -191,7 +192,7 @@ function q(t, l, o = !0) {
   function P(e) {
     if (e.errorElements)
       return e.errorElements;
-    let s = S(e.input, r.config.classTo), i = null, n = null;
+    let s = I(e.input, r.config.classTo), i = null, n = null;
     if (r.config.classTo === r.config.errorTextParent)
       i = s;
     else {
@@ -231,7 +232,7 @@ function q(t, l, o = !0) {
       delete e.input.pristine;
     }), r.fields = [];
   }, r.setGlobalConfig = function(e) {
-    R = e;
+    M = e;
   }, r;
 }
 q.addValidator = function(t, l, o, r, y) {

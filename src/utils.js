@@ -14,8 +14,11 @@ export function tmpl(str, ...args) {
 }
 
 export function groupedElemCount(input) {
+  const name = input.getAttribute('name');
+  const baseName = name.replace(/\[\d*\]$/, '');
+
   return input.pristine.self.form.querySelectorAll(
-    'input[name="' + input.getAttribute('name') + '"]:checked'
+    `input[name^="${baseName}["]:checked, input[name="${baseName}"]:checked`
   ).length;
 }
 
