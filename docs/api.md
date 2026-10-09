@@ -1,3 +1,7 @@
+---
+outline: [2, 3]
+---
+
 # API reference
 
 ## Constructor

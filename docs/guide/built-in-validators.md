@@ -2,18 +2,20 @@
 
 Pristine reads these attributes from your fields. The examples on this page all use `new Pristine(form)` with the default settings, so only their HTML is shown.
 
-| Validator | Enable it with | Passes when |
+| Validator | Attribute | Passes when |
 | --- | --- | --- |
-| `required` | `required` or `data-pristine-required` | The field isn't empty. For checkboxes and radio buttons: at least one in the group is checked. |
-| `email` | `type="email"` or `data-pristine-type="email"` | The value looks like an email address. |
-| `number` | `type="number"` or `data-pristine-type="number"` | The value is a number, such as `42`, `-0.5` or `1e3`. |
+| `required` | `required` | The field isn't empty. For checkboxes and radio buttons: at least one in the group is checked. |
+| `email` | `type="email"` | The value looks like an email address. |
+| `number` | `type="number"` | The value is a number, such as `42`, `-0.5` or `1e3`. |
 | `integer` | `data-pristine-type="integer"` | The value only contains digits, with no sign or decimal point. |
-| `minlength` | `minlength="3"` or `data-pristine-minlength="3"` | The value has at least that many characters. |
-| `maxlength` | `maxlength="16"` or `data-pristine-maxlength="16"` | The value has at most that many characters. |
-| `min` | `min="18"` or `data-pristine-min="18"` | The number is at least that value. For checkboxes: at least that many in the group are checked. |
-| `max` | `max="120"` or `data-pristine-max="120"` | The number is at most that value. For checkboxes: at most that many are checked. |
-| `pattern` | `pattern="…"` or `data-pristine-pattern="…"` | The value matches the regular expression. |
-| `equals` | `data-pristine-equals="#other-field"` | The value is the same as the other field's. |
+| `minlength` | `minlength="3"` | The value has at least that many characters. |
+| `maxlength` | `maxlength="16"` | The value has at most that many characters. |
+| `min` | `min="18"` | The number is at least that value. For checkboxes: at least that many in the group are checked. |
+| `max` | `max="120"` | The number is at most that value. For checkboxes: at most that many are checked. |
+| `pattern` | `pattern="…"` | The value matches the regular expression. |
+| `equals` | `data-pristine-equals="#id"` | The value is the same as that of the field with this ID. |
+
+Every attribute also works with a `data-pristine-` prefix, such as `data-pristine-minlength="3"` or `data-pristine-type="email"`. Use the prefixed form when you don't want the browser to act on the attribute itself.
 
 Every validator except `required` passes when the field is empty, so optional fields can have rules too. Add `required` when a value is needed.
 

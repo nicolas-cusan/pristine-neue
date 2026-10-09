@@ -5,6 +5,9 @@ hero:
   name: Pristine Neue
   text: Vanilla JavaScript form validation
   tagline: About 3 kB gzipped, with no dependencies. It validates from the HTML attributes you already write, and supports custom, async and translated validators.
+  image:
+    src: /logo.svg
+    alt: Pristine Neue
   actions:
     - theme: brand
       text: Get started
@@ -24,7 +27,7 @@ features:
     details: Override any message per field or per language, with placeholders for the value and the parameters.
 ---
 
-## Try it
+## See it in action
 
 Submit the form while it's empty, then fix the fields one by one. After the first submit, Pristine checks each field as you type.
 
