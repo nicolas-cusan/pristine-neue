@@ -4,5 +4,6 @@
 node_modules
 coverage
 dist-docs
+docs/.vitepress/cache
 _site
 Gemfile.lock
