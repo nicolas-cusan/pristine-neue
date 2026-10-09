@@ -16,6 +16,10 @@ export default defineConfig({
   // Design specs and plans live in docs/superpowers/, they aren't pages
   srcExclude: ['superpowers/**'],
   cleanUrls: true,
+  // head links don't get the base prefix automatically
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/pristine-neue/logo.svg' }],
+  ],
 
   vite: {
     resolve: {
@@ -29,6 +33,8 @@ export default defineConfig({
   },
 
   themeConfig: {
+    logo: '/logo.svg',
+
     nav: [
       { text: 'Guide', link: '/guide/getting-started', activeMatch: '/guide/' },
       { text: 'API', link: '/api' },

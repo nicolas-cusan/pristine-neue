@@ -1,0 +1,205 @@
+/* Brand: the green of a valid field */
+:root {
+  --vp-c-brand-1: var(--vp-c-green-1);
+  --vp-c-brand-2: var(--vp-c-green-2);
+  --vp-c-brand-3: var(--vp-c-green-3);
+  --vp-c-brand-soft: var(--vp-c-green-soft);
+}
+
+/* Live examples (Demo.vue) */
+.demo {
+  margin: 24px 0 16px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.demo-header {
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.demo-body {
+  padding: 24px 20px;
+  background: var(--vp-c-bg);
+}
+
+.demo-body form {
+  display: grid;
+  gap: 18px;
+  max-width: 420px;
+}
+
+.demo-body .field,
+.demo-body .form-group {
+  display: grid;
+  gap: 6px;
+}
+
+.demo-body label,
+.demo-body .field-label {
+  margin: 0;
+  color: var(--vp-c-text-1);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.demo-body input:not([type='checkbox']),
+.demo-body textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font-size: 15px;
+  line-height: 22px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.demo-body textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.demo-body input:not([type='checkbox']):focus,
+.demo-body textarea:focus {
+  outline: none;
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 0 0 3px var(--vp-c-brand-soft);
+}
+
+.demo-body .error input:not([type='checkbox']),
+.demo-body .error textarea,
+.demo-body .has-danger input {
+  border-color: var(--vp-c-danger-1);
+}
+
+.demo-body .error input:not([type='checkbox']):focus,
+.demo-body .error textarea:focus,
+.demo-body .has-danger input:focus {
+  box-shadow: 0 0 0 3px var(--vp-c-danger-soft);
+}
+
+.demo-body .success input:not([type='checkbox']),
+.demo-body .success textarea,
+.demo-body .has-success input {
+  border-color: var(--vp-c-success-1);
+}
+
+.demo-body .pristine-error {
+  margin: 0;
+  color: var(--vp-c-danger-1);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.demo-body .field-hint {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.demo-body label:has(> input[type='checkbox']) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+
+.demo-body input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--vp-c-brand-1);
+}
+
+.demo-body button[type='submit'] {
+  justify-self: start;
+  padding: 8px 18px;
+  border-radius: 8px;
+  background: var(--vp-c-brand-3);
+  color: var(--vp-c-white);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  transition: background-color 0.2s;
+}
+
+.demo-body button[type='submit']:hover {
+  background: var(--vp-c-brand-2);
+}
+
+.demo-body .locale-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.demo-body .locale-switch button {
+  padding: 4px 12px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 999px;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.demo-body .locale-switch button[aria-pressed='true'] {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+}
+
+.demo-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+}
+
+.demo .demo-status {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.demo .demo-status[data-status='valid'] {
+  color: var(--vp-c-success-1);
+}
+
+.demo .demo-status[data-status='invalid'] {
+  color: var(--vp-c-danger-1);
+}
+
+.demo-reset {
+  padding: 2px 10px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  line-height: 20px;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.demo-reset:hover {
+  border-color: var(--vp-c-text-3);
+  color: var(--vp-c-text-1);
+}
