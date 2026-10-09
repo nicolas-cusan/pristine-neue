@@ -23,3 +23,17 @@ features:
   - title: Translated messages
     details: Override any message per field or per language, with placeholders for the value and the parameters.
 ---
+
+## Try it
+
+Submit the form while it's empty, then fix the fields one by one. After the first submit, Pristine checks each field as you type.
+
+<Demo name="signup" />
+
+::: code-group
+
+<<< @/examples/signup.html [HTML]
+
+<<< @/examples/signup.js#usage [JavaScript]
+
+:::
