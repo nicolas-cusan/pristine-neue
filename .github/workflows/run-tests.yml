@@ -29,6 +29,8 @@ jobs:
         run: pnpm test
       - name: Run tests with coverage
         run: pnpm run test:coverage
+      - name: Build documentation
+        run: pnpm run build:docs
       - name: Upload coverage report
         uses: actions/upload-artifact@v7
         with:

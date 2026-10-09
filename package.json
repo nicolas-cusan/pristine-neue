@@ -4,6 +4,7 @@
   "description": "A tiny vanilla javascript form validation library",
   "main": "dist/pristine.umd.cjs",
   "module": "dist/pristine.js",
+  "files": ["dist", "src"],
   "type": "module",
   "scripts": {
     "dev": "vitepress dev docs",

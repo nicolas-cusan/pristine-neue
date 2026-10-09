@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-`pristine-neue` is a dependency-free vanilla JS form validation library published to npm. It is a fork of [PristineJS](https://github.com/sha256/Pristine). The library is `src/pristine.js`, plus the small helper files `src/utils.js` and `src/lang.js` (default English messages). `README.md` is the user-facing API reference. `README.html` is an old VS Code export that is no longer updated, so edit `README.md`.
+`pristine-neue` is a dependency-free vanilla JS form validation library published to npm. It is a fork of [PristineJS](https://github.com/sha256/Pristine). The library is `src/pristine.js`, plus the small helper files `src/utils.js` and `src/lang.js` (default English messages). `README.md` and the docs site (`docs/`, VitePress) are the user-facing documentation. Both cover the full API, so update both when the API changes. `README.html` is an old VS Code export that is no longer updated, so edit `README.md`.
 
 ## Commands
 
@@ -18,8 +18,9 @@ pnpm test:coverage                                     # covers src/ only; repor
 pnpm vitest run tests/core.test.js                     # one file
 pnpm vitest run tests/core.test.js -t "custom config"  # tests whose names match
 pnpm build                                             # dist/pristine.js (ESM) + dist/pristine.umd.cjs (UMD)
-pnpm build:docs                                        # demo page from docs/ -> dist-docs/
-pnpm dev                                               # Vite dev server rooted at docs/: a manual playground; docs/script.js imports ../src
+pnpm build:docs                                        # docs site (VitePress) -> dist-docs/
+pnpm dev                                               # docs site dev server; its live examples run src/ directly
+pnpm preview                                           # serve the built docs site
 ```
 
 There is no lint or format script.
@@ -44,12 +45,31 @@ The whole library is a single constructor function in `src/pristine.js`.
 - **Live validation** listens to `change` on every field, plus `input` on fields that aren't radios or checkboxes. The config key `liveAfterFirstValitation` is misspelled, but it is public config, so don't rename it. When it is `true` (the default), live validation only starts after a full-form `validate()` call with no arguments.
 - **Error DOM.** `errorClass`/`successClass` go on the nearest ancestor that has the `classTo` class. The message element gets the class `pristine-error` plus `errorTextClass`. It is created inside the `errorTextParent` element and cached on the field. `reset()` clears that cache and removes those elements.
 
+## Docs site
+
+- VitePress 1.6, with `docs/` as the source. `docs/.vitepress/config.js` sets:
+  - `base: '/pristine-neue/'`, the GitHub Pages project path
+  - `outDir: '../dist-docs'`
+  - `srcExclude: ['superpowers/**']`, because design specs and plans aren't pages
+
+  The theme in `docs/.vitepress/theme/` adds the `<Demo>` component and `custom.css`.
+- Live examples are file pairs in `docs/examples/`:
+  - `<name>.html` is the markup, including the `<form>`.
+  - `<name>.js` exports `setup(form)` and returns the Pristine instance.
+
+  Pages show the code between `// #region usage` and `// #endregion usage` with `<<< @/examples/<name>.js#usage`, and `<Demo name="<name>" />` runs it. Example modules must not touch the DOM at import time, because VitePress pre-renders pages in Node. `tests/docs-examples.test.js` runs every pair in jsdom.
+- VitePress fails the build on links to pages that don't exist, so add a page before linking to it.
+- `pristine-neue` is aliased to `src/pristine.js` in both the VitePress and the Vitest config, so docs and tests run the local source.
+- `docs/public/.nojekyll` must stay. GitHub Pages builds the `gh-pages` branch with Jekyll, which drops files whose names start with `_`.
+- `vite.config.js` is only the library build. Don't give it `root: 'docs'`, or Vite copies `docs/public/` into `dist/`.
+
 ## Build & release
 
 - `dist/` is committed. Source fixes run `pnpm build` and commit the rebuilt `dist/` together with the `src/` change.
 - `module` → `dist/pristine.js` and `main` → `dist/pristine.umd.cjs`. The UMD global is `pristine` (lowercase).
 - Version bumps are separate commits whose message is just the version (e.g. `1.1.9`), tagged `v1.1.9`, the way `npm version` makes them.
-- CI in `.github/workflows/` also installs with pnpm 9 (via `pnpm/action-setup`). `run-tests.yml` runs on every push. `deploy-docs.yml` pushes `dist-docs/` to the `gh-pages` branch on pushes to `master`. `publish.yml` runs `npm publish` when a GitHub release is created. It authenticates through npm trusted publishing (OIDC), not a token. The trusted publisher configured on npmjs.com is tied to the file name `publish.yml`, so renaming that file breaks publishing.
+- CI in `.github/workflows/` also installs with pnpm 9 (via `pnpm/action-setup`). `run-tests.yml` runs the tests and the docs build on every push. `deploy-docs.yml` pushes `dist-docs/` to the `gh-pages` branch on pushes to `master`. `publish.yml` runs `npm publish` when a GitHub release is created. It authenticates through npm trusted publishing (OIDC), not a token. The trusted publisher configured on npmjs.com is tied to the file name `publish.yml`, so renaming that file breaks publishing.
+- The `files` field in `package.json` limits the npm package to `dist/` and `src/`. npm always adds `package.json`, `LICENSE` and every `README*` file, which includes the stale `README.html`.
 
 ## Tests
 
