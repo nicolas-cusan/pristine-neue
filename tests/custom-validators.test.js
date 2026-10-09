@@ -186,3 +186,34 @@ describe('Pristine Custom Validators', () => {
     expect(mockAsyncCheck).toHaveBeenCalledWith('available');
   });
 });
+
+describe('Pristine instance validator priority', () => {
+  test('defaults to priority 1, so it runs before priority-0 validators', async () => {
+    let lowPriorityRan = false;
+    Pristine.addValidator(
+      'low-priority',
+      () => {
+        lowPriorityRan = true;
+        return true;
+      },
+      'Never shown',
+      0
+    );
+
+    createFormFixture(`
+      <form id="priority-form">
+        <div class="field">
+          <input id="priority-input" type="text" data-pristine-low-priority />
+        </div>
+      </form>
+    `);
+    const input = document.getElementById('priority-input');
+    const pristine = new Pristine(document.getElementById('priority-form'));
+
+    // No priority given: it should default to 1 and halt before 'low-priority'
+    pristine.addValidator(input, () => false, 'Always fails', undefined, true);
+
+    expect(await pristine.validate(input)).toBe(false);
+    expect(lowPriorityRan).toBe(false);
+  });
+});

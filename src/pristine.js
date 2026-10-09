@@ -422,7 +422,12 @@ export default function Pristine(form, config, live = true) {
    */
   self.addValidator = function (elem, fn, msg, priority, halt) {
     if (elem instanceof HTMLElement) {
-      elem.pristine.validators.push({ fn, msg, priority, halt });
+      elem.pristine.validators.push({
+        fn,
+        msg,
+        priority: priority === undefined ? 1 : priority,
+        halt,
+      });
       elem.pristine.validators.sort((a, b) => b.priority - a.priority);
     } else {
       console.warn('The parameter elem must be a dom element');
