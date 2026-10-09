@@ -4,14 +4,14 @@ const form = document.querySelector('form');
 
 Pristine.addValidator(
   'async',
-  async function (val, endpointUrl, csrfToken) {
+  async function () {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(false);
       }, 2000);
     });
   },
-  { msg: 'This email is already in use.' },
+  'This name is already taken.',
   5,
   false
 );
