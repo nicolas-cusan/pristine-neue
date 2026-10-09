@@ -1,0 +1,11 @@
+<form>
+  <div class="field">
+    <label for="messages-email">Work email</label>
+    <input id="messages-email" name="email" type="email" required data-pristine-required-message="We need your work email to send the invite" data-pristine-email-message="That doesn't look like an email address" />
+  </div>
+  <div class="field">
+    <label for="messages-team">Team name</label>
+    <input id="messages-team" name="team" type="text" minlength="3" data-pristine-minlength-message="Use at least ${1} characters" />
+  </div>
+  <button type="submit">Submit</button>
+</form>
