@@ -54,4 +54,16 @@ describe('Pristine Parameter Persistence', () => {
     result = await pristine.validate(rangeInput);
     expect(result).toBe(true);
   });
+
+  test('should fill validator parameters into the error message', async () => {
+    const rangeInput = document.getElementById('range-input');
+
+    rangeInput.value = '5';
+    await pristine.validate(rangeInput);
+
+    const errorElement = rangeInput
+      .closest('.field')
+      .querySelector('.pristine-error');
+    expect(errorElement.textContent).toBe('Value must be between 10 and 20');
+  });
 });

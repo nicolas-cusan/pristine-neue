@@ -373,30 +373,34 @@ export default function Pristine(form, config, live = true) {
       return validator.msg(field.input.value, params, currentLocale);
     }
 
+    // Templates get the value as ${0} and the attribute values as ${1}, ${2}…,
+    // so leave out the input element, which params holds at index 1
+    const tmplArgs = [params[0], ...params.slice(2)];
+
     if (
       validator.msg === Object(validator.msg) &&
       validator.msg[currentLocale]
     ) {
-      return tmpl(validator.msg[currentLocale], ...params);
+      return tmpl(validator.msg[currentLocale], ...tmplArgs);
     }
 
     if (
       field.messages[currentLocale] &&
       field.messages[currentLocale][validator.name]
     ) {
-      return tmpl(field.messages[currentLocale][validator.name], ...params);
+      return tmpl(field.messages[currentLocale][validator.name], ...tmplArgs);
     }
 
     if (lang[currentLocale] && lang[currentLocale][validator.name]) {
-      return tmpl(lang[currentLocale][validator.name], ...params);
+      return tmpl(lang[currentLocale][validator.name], ...tmplArgs);
     }
 
     if (typeof validator.msg === 'string') {
-      return tmpl(validator.msg, ...params);
+      return tmpl(validator.msg, ...tmplArgs);
     }
     // If no specific message is found, use the default message or a fallback
     if (lang[currentLocale] && lang[currentLocale].default) {
-      return tmpl(lang[currentLocale].default, ...params);
+      return tmpl(lang[currentLocale].default, ...tmplArgs);
     }
 
     // Ensure we always return a non-empty string

@@ -205,6 +205,18 @@ describe('Pristine Core Functionality', () => {
     expect(result).toBe(false);
   });
 
+  test('should fill the attribute value into a built-in validator message', async () => {
+    const numberInput = document.getElementById('number-input');
+
+    numberInput.value = '3';
+    await pristine.validate(numberInput);
+
+    const errorElement = numberInput
+      .closest('.field')
+      .querySelector('.pristine-error');
+    expect(errorElement.textContent).toBe('Minimum value for this field is 5');
+  });
+
   test('should add and remove errors', async () => {
     const textInput = document.getElementById('text-input');
 

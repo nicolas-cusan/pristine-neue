@@ -20,9 +20,7 @@ function I(t, l) {
   return t;
 }
 function E(t, ...l) {
-  if (typeof t != "string") return "";
-  const o = [...l].shift;
-  return t.replace(/\${(\d+)}/g, (r, y) => o[parseInt(y)] !== void 0 ? o[parseInt(y)] : r);
+  return typeof t != "string" ? "" : t.replace(/\${(\d+)}/g, (o, r) => l[parseInt(r)] !== void 0 ? l[parseInt(r)] : o);
 }
 function C(t) {
   const o = t.getAttribute("name").replace(/\[\d*\]$/, "");
@@ -48,38 +46,38 @@ const L = "pristine-error", N = "input:not([disabled]):not([type^=hidden]):not([
   "pattern"
 ], O = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, F = /-message(?:-([a-z]{2}(?:_[A-Z]{2})?))?/;
 let m = "en";
-const R = {}, d = (t, l) => {
+const R = {}, p = (t, l) => {
   l.name = t, l.priority === void 0 && (l.priority = 1), R[t] = l;
 };
-d("text", { fn: (t, l) => !0, priority: 0 });
-d("required", {
+p("text", { fn: (t, l) => !0, priority: 0 });
+p("required", {
   fn: (t, l) => l.type === "radio" || l.type === "checkbox" ? C(l) : t !== void 0 && t !== "",
   priority: 99,
   halt: !0
 });
-d("email", { fn: (t, l) => !t || O.test(t) });
-d("number", { fn: (t, l) => !t || !isNaN(parseFloat(t)), priority: 2 });
-d("integer", { fn: (t, l) => !t || /^\d+$/.test(t) });
-d("minlength", {
+p("email", { fn: (t, l) => !t || O.test(t) });
+p("number", { fn: (t, l) => !t || !isNaN(parseFloat(t)), priority: 2 });
+p("integer", { fn: (t, l) => !t || /^\d+$/.test(t) });
+p("minlength", {
   fn: (t, l, o) => !t || t.length >= parseInt(o)
 });
-d("maxlength", {
+p("maxlength", {
   fn: (t, l, o) => !t || t.length <= parseInt(o)
 });
-d("min", {
+p("min", {
   fn: (t, l, o) => !t || (l.type === "checkbox" ? C(l) >= parseInt(o) : parseFloat(t) >= parseFloat(o))
 });
-d("max", {
+p("max", {
   fn: (t, l, o) => !t || (l.type === "checkbox" ? C(l) <= parseInt(o) : parseFloat(t) <= parseFloat(o))
 });
-d("pattern", {
+p("pattern", {
   fn: (t, l, o) => {
     if (!t) return !0;
     let r = typeof o == "string" ? o.match(new RegExp("^/(.*?)/([gimy]*)$")) : null;
     return r ? new RegExp(r[1], r[2]).test(t) : new RegExp(o).test(t);
   }
 });
-d("equals", {
+p("equals", {
   fn: (t, l, o) => {
     let r;
     return typeof o == "string" && o.startsWith("#") ? r = document.querySelector(o) : o instanceof HTMLElement && (r = o), r && (!t && !r.value || r.value === t);
@@ -89,10 +87,10 @@ function q(t, l, o = !0) {
   const r = this;
   let y = !1;
   _(t, l, o);
-  function _(e, s, i) {
-    e.setAttribute("novalidate", "true"), r.form = e, r.config = { ...M, ...s || {} }, r.live = i !== !1, r.fields = Array.from(e.querySelectorAll(N)).map((n) => {
+  function _(e, n, i) {
+    e.setAttribute("novalidate", "true"), r.form = e, r.config = { ...M, ...n || {} }, r.live = i !== !1, r.fields = Array.from(e.querySelectorAll(N)).map((s) => {
       const c = [], a = {}, f = {};
-      Array.from(n.attributes).forEach((u) => {
+      Array.from(s.attributes).forEach((u) => {
         if (/^data-pristine-/.test(u.name)) {
           let g = u.name.substr(14);
           const T = g.match(F);
@@ -102,14 +100,14 @@ function q(t, l, o = !0) {
             return;
           }
           let $ = u.value;
-          g === "type" && (g = $), x(c, a, g, $);
-        } else S.includes(u.name) ? x(c, a, u.name, u.value) : u.name === "type" && x(c, a, u.value);
+          g === "type" && (g = $), A(c, a, g, $);
+        } else S.includes(u.name) ? A(c, a, u.name, u.value) : u.name === "type" && A(c, a, u.value);
       }), c.sort((u, g) => g.priority - u.priority);
-      const p = (u) => {
+      const d = (u) => {
         r.config.liveAfterFirstValitation && y ? r.validate(u.target) : r.config.liveAfterFirstValitation || r.validate(u.target);
       };
-      return r.live && (n.addEventListener("change", p), ["radio", "checkbox"].includes(n.getAttribute("type")) || n.addEventListener("input", p)), n.pristine = {
-        input: n,
+      return r.live && (s.addEventListener("change", d), ["radio", "checkbox"].includes(s.getAttribute("type")) || s.addEventListener("input", d)), s.pristine = {
+        input: s,
         validators: c,
         params: a,
         messages: f,
@@ -117,105 +115,108 @@ function q(t, l, o = !0) {
       };
     });
   }
-  function x(e, s, i, n) {
+  function A(e, n, i, s) {
     let c = R[i];
-    if (c && (e.push(c), n)) {
+    if (c && (e.push(c), s)) {
       let a;
       if (i === "pattern")
-        a = [n];
-      else if (n.trim().startsWith("{") || n.trim().startsWith("["))
+        a = [s];
+      else if (s.trim().startsWith("{") || s.trim().startsWith("["))
         try {
-          const f = JSON.parse(n);
+          const f = JSON.parse(s);
           a = Array.isArray(f) ? f : [f];
         } catch {
-          a = n.split(",");
+          a = s.split(",");
         }
       else
-        a = n.split(",");
-      a.unshift(null), s[i] = a;
+        a = s.split(",");
+      a.unshift(null), n[i] = a;
     }
   }
-  r.validate = (e = null, s = !1) => {
+  r.validate = (e = null, n = !1) => {
     let i = r.fields;
     e ? e instanceof HTMLElement ? i = [e.pristine] : (e instanceof NodeList || e instanceof (window.$ || Array) || Array.isArray(e)) && (i = Array.from(e).map((a) => a.pristine)) : y = !0;
-    let n = !0;
+    let s = !0;
     const c = [];
     for (let a = 0; i[a]; a++) {
-      const f = i[a], p = r.validateField(f);
-      p instanceof Promise ? c.push(
-        p.then((u) => (u ? !s && w(f) : (n = !1, !s && A(f)), u))
-      ) : p ? !s && w(f) : (n = !1, !s && A(f));
+      const f = i[a], d = r.validateField(f);
+      d instanceof Promise ? c.push(
+        d.then((u) => (u ? !n && w(f) : (s = !1, !n && x(f)), u))
+      ) : d ? !n && w(f) : (s = !1, !n && x(f));
     }
-    return c.length > 0 ? Promise.all(c).then(() => n) : Promise.resolve(n);
+    return c.length > 0 ? Promise.all(c).then(() => s) : Promise.resolve(s);
   }, r.getErrors = function(e) {
     if (!e) {
-      let s = [];
+      let n = [];
       for (let i = 0; i < r.fields.length; i++) {
-        let n = r.fields[i];
-        n.errors.length && s.push({ input: n.input, errors: n.errors });
+        let s = r.fields[i];
+        s.errors.length && n.push({ input: s.input, errors: s.errors });
       }
-      return s;
+      return n;
     }
     return e.tagName && e.tagName.toLowerCase() === "select" ? e.pristine.errors : e.length ? e[0].pristine.errors : e.pristine.errors;
   }, r.validateField = function(e) {
-    let s = [], i = !0, n = [];
+    let n = [], i = !0, s = [];
     for (let c = 0; e.validators[c]; c++) {
       let a = e.validators[c], f = e.params[a.name] ? [...e.params[a.name]] : [];
       f[0] = e.input.value, f.length > 1 ? f.splice(1, 0, e.input) : f.push(e.input);
-      let p = a.fn.apply(null, f);
-      if (p instanceof Promise)
-        n.push(
-          p.then((u) => {
+      let d = a.fn.apply(null, f);
+      if (d instanceof Promise)
+        s.push(
+          d.then((u) => {
             if (!u) {
               i = !1;
               let g = v(e, a, f);
-              s.push(g);
+              n.push(g);
             }
             return u;
           })
         );
-      else if (!p) {
+      else if (!d) {
         i = !1;
         let u = v(e, a, f);
-        if (s.push(u), a.halt === !0)
+        if (n.push(u), a.halt === !0)
           break;
       }
     }
-    return n.length > 0 ? Promise.all(n).then(() => (e.errors = s, i && s.length === 0)) : (e.errors = s, i);
+    return s.length > 0 ? Promise.all(s).then(() => (e.errors = n, i && n.length === 0)) : (e.errors = n, i);
   };
-  function v(e, s, i) {
-    return typeof s.msg == "function" ? s.msg(e.input.value, i, m) : s.msg === Object(s.msg) && s.msg[m] ? E(s.msg[m], ...i) : e.messages[m] && e.messages[m][s.name] ? E(e.messages[m][s.name], ...i) : h[m] && h[m][s.name] ? E(h[m][s.name], ...i) : typeof s.msg == "string" ? E(s.msg, ...i) : h[m] && h[m].default ? E(h[m].default, ...i) : `Validation failed for ${s.name}`;
+  function v(e, n, i) {
+    if (typeof n.msg == "function")
+      return n.msg(e.input.value, i, m);
+    const s = [i[0], ...i.slice(2)];
+    return n.msg === Object(n.msg) && n.msg[m] ? E(n.msg[m], ...s) : e.messages[m] && e.messages[m][n.name] ? E(e.messages[m][n.name], ...s) : h[m] && h[m][n.name] ? E(h[m][n.name], ...s) : typeof n.msg == "string" ? E(n.msg, ...s) : h[m] && h[m].default ? E(h[m].default, ...s) : `Validation failed for ${n.name}`;
   }
-  r.addValidator = function(e, s, i, n, c) {
-    e instanceof HTMLElement ? (e.pristine.validators.push({ fn: s, msg: i, priority: n, halt: c }), e.pristine.validators.sort((a, f) => f.priority - a.priority)) : console.warn("The parameter elem must be a dom element");
+  r.addValidator = function(e, n, i, s, c) {
+    e instanceof HTMLElement ? (e.pristine.validators.push({ fn: n, msg: i, priority: s, halt: c }), e.pristine.validators.sort((a, f) => f.priority - a.priority)) : console.warn("The parameter elem must be a dom element");
   };
   function P(e) {
     if (e.errorElements)
       return e.errorElements;
-    let s = I(e.input, r.config.classTo), i = null, n = null;
+    let n = I(e.input, r.config.classTo), i = null, s = null;
     if (r.config.classTo === r.config.errorTextParent)
-      i = s;
+      i = n;
     else {
-      if (!s) return [null, null];
-      i = s.querySelector(
+      if (!n) return [null, null];
+      i = n.querySelector(
         "." + r.config.errorTextParent
       );
     }
-    return i && (n = i.querySelector("." + L), n || (n = document.createElement(r.config.errorTextTag), n.className = L + " " + r.config.errorTextClass, i.appendChild(n), n.pristineDisplay = n.style.display)), e.errorElements = [s, n];
+    return i && (s = i.querySelector("." + L), s || (s = document.createElement(r.config.errorTextTag), s.className = L + " " + r.config.errorTextClass, i.appendChild(s), s.pristineDisplay = s.style.display)), e.errorElements = [n, s];
   }
-  function A(e) {
-    let s = P(e), i = s[0], n = s[1];
-    i && (i.classList.remove(r.config.successClass), i.classList.add(r.config.errorClass)), n && (n.innerHTML = e.errors.join("<br/>"), n.style.display = n.pristineDisplay || "");
+  function x(e) {
+    let n = P(e), i = n[0], s = n[1];
+    i && (i.classList.remove(r.config.successClass), i.classList.add(r.config.errorClass)), s && (s.innerHTML = e.errors.join("<br/>"), s.style.display = s.pristineDisplay || "");
   }
-  r.addError = function(e, s) {
-    e = e.length ? e[0] : e, e.pristine.errors.push(s), A(e.pristine);
+  r.addError = function(e, n) {
+    e = e.length ? e[0] : e, e.pristine.errors.push(n), x(e.pristine);
   }, r.removeError = function(e) {
-    let s = P(e), i = s[0], n = s[1];
-    return i && (i.classList.remove(r.config.errorClass), i.classList.remove(r.config.successClass)), n && (n.innerHTML = "", n.style.display = "none"), s;
+    let n = P(e), i = n[0], s = n[1];
+    return i && (i.classList.remove(r.config.errorClass), i.classList.remove(r.config.successClass)), s && (s.innerHTML = "", s.style.display = "none"), n;
   };
   function w(e) {
-    let s = r.removeError(e)[0];
-    s && s.classList.add(r.config.successClass);
+    let n = r.removeError(e)[0];
+    n && n.classList.add(r.config.successClass);
   }
   return r.reset = function() {
     for (let e = 0; r.fields[e]; e++)
@@ -236,7 +237,7 @@ function q(t, l, o = !0) {
   }, r;
 }
 q.addValidator = function(t, l, o, r, y) {
-  d(t, { fn: l, msg: o, priority: r, halt: y });
+  p(t, { fn: l, msg: o, priority: r, halt: y });
 };
 q.addMessages = function(t, l) {
   let o = h.hasOwnProperty(t) ? h[t] : h[t] = {};
