@@ -1,14 +1,14 @@
 # Pristine Neue - Vanilla javascript form validation library
 
+**Documentation and live examples: https://nicolas-cusan.github.io/pristine-neue/**
+
 ## Credits
 
-This library is a fork of [prsitinejs](https://github.com/sha256/Pristine) by [sha256](https://github.com/sha256)
+This library is a fork of [PristineJS](https://github.com/sha256/Pristine) by [sha256](https://github.com/sha256)
 
-## Living demo
+## Live demo
 
-Some examples of use can be found [here](http://pristine.js.org/demo.html).
-
-This demo is from the original library, a new demo is coming soon.
+Try every validator in the [documentation](https://nicolas-cusan.github.io/pristine-neue/).
 
 ## Installation
 
@@ -18,10 +18,27 @@ $ npm install pristine-neue --save
 
 ## Usage
 
-Include the javascript file in your html head or just before the closing body tag
+Import it in your JavaScript:
+
+```js
+import Pristine from 'pristine-neue';
+```
+
+Or load it in the browser without a build step, either as an ES module:
 
 ```html
-<script src="path/to/file/pristine.js" type="text/javascript"></script>
+<script type="module">
+  import Pristine from 'https://cdn.jsdelivr.net/npm/pristine-neue@1/dist/pristine.js';
+</script>
+```
+
+or with a classic script tag. The UMD build defines a global named `pristine` (lowercase). Load it from unpkg: jsDelivr serves `.cjs` files with a content type that browsers refuse to run.
+
+```html
+<script src="https://unpkg.com/pristine-neue@1/dist/pristine.umd.cjs"></script>
+<script>
+  const Pristine = window.pristine;
+</script>
 ```
 
 Create a Pristine instance and handle the submission.
@@ -48,13 +65,13 @@ like `email, number` and more..
 
 `Pristine` takes `3` parameters
 
-- **form** DOM element con containinng the fields to validate. Tipically a form element, but it can be any DOM element.
-- **config** An object containing the configuration. [See default configuration](#default-configuation).
+- **form** The DOM element containing the fields to validate. Typically a form element, but it can be any DOM element.
+- **config** An object containing the configuration. [See default configuration](#default-configuration).
 - **live** A boolean value indicating whether pristine should validate as you type, default is `true`.
 
 ## Adding custom validators
 
-You can add custom validators to a spcific pristine intance or add them globally.
+You can add custom validators to a specific Pristine instance or add them globally.
 
 ### Adding a custom validator to an instance
 
@@ -112,7 +129,7 @@ Validator functions receive arguments in the following order:
 3. **Additional parameters** - These come from the `data-pristine-*` attributes and are processed as follows:
 
    - **Pattern attributes** (`data-pristine-pattern`): The entire pattern string is passed as a single argument
-   - **JSON values**: If the attribute value is valid JSON (starts with `{` or `[`), it will be parsed and passed as a single argument
+   - **JSON values**: If the attribute value is valid JSON (starts with `{` or `[`), it is parsed. An object is passed as a single argument, and an array is spread into separate arguments
    - **Regular strings**: For all other cases, the attribute value is split at commas (`,`) and each part is passed as a separate argument
 
 #### Examples:
@@ -129,6 +146,10 @@ Validator functions receive arguments in the following order:
 <!-- JSON value -->
 <input data-pristine-custom-config='{"option1": true, "option2": "value"}' />
 <!-- Validator receives: (value, element, {"option1": true, "option2": "value"}) -->
+
+<!-- JSON array -->
+<input data-pristine-range='[5, 10]' />
+<!-- Validator receives: (value, element, 5, 10) -->
 ```
 
 When creating custom validators, ensure your function accepts the appropriate number of parameters based on how you plan to configure it in HTML.
@@ -139,7 +160,7 @@ When creating custom validators, ensure your function accepts the appropriate nu
 <input required data-pristine-required-message="My custom message" />
 ```
 
-Add an attribute like `data-pristine-<ValidatorName>-message`with the custom message as value to show custom error messages. You can add custom messages like this for as many validators as you need. Here `ValidatorName` means `required`, `email`, `min`, `max` etc.
+Add an attribute like `data-pristine-<ValidatorName>-message`with the custom message as value to show custom error messages. You can add custom messages like this for as many validators as you need. Here `ValidatorName` means `required`, `email`, `min`, `max` etc. Add a two-letter language code to show a message only in that language, e.g. `data-pristine-required-message-de`. Without a code, the message is used for English (`en`).
 
 ## Built-in validators
 
@@ -153,7 +174,7 @@ Add an attribute like `data-pristine-<ValidatorName>-message`with the custom mes
 | `maxlength` | `maxlength="10"` or `data-pristine-maxlength="10"`                                                      |
 | `min`       | `min="20"` or `data-pristine-min="20"`                                                                  |
 | `max`       | `max="100"` or `data-pristine-max="100"`                                                                |
-| `pattern`   | `pattern="/[a-z]+$/i"` or `data-pristine-pattern="/[a-z]+$/i"`, `\` must be escaped (replace with `\\`) |
+| `pattern`   | `pattern="/[a-z]+$/i"` or `data-pristine-pattern="/[a-z]+$/i"`. In HTML, write backslashes as they are (`\d`); escape them (`\\d`) only inside JavaScript strings. Pristine doesn't anchor the pattern, so add `^` and `$` yourself |
 | `equals`    | `data-pristine-equals="#field-selector"`, Check that two fields are equal                               |
 
 ## API
@@ -168,18 +189,18 @@ Constructor function
 | `config`  | See below | <center>✕</center> | Config object                                                  |
 | `live`    | `true`    | <center>✕</center> | Whether pristine should validate as you type                   |
 
-##### Default configuation
+##### Default configuration
 
 ```js
 {
-  classTo: 'field', // Class of parent element where the error/success class is added
-  errorClass: 'error' // Error class,
-  successClass: 'success' // Success class,
-  errorTextParent: 'field', // Class of parent element to whom the error element is appended
+  classTo: 'field', // Class of the parent element that gets the error/success class
+  errorClass: 'error', // Error class
+  successClass: 'success', // Success class
+  errorTextParent: 'field', // Class of the parent element the error element is appended to
   errorTextTag: 'div', // Element type to create for the error text
   errorTextClass: 'error-msg', // Class of the error text element
-  liveAfterFirstValitation: true, // Enable live validation only after first form submission (requires live parameter to be true)
-};
+  liveAfterFirstValitation: true, // Enable live validation only after the first form submission (requires the live parameter to be true)
+}
 ```
 
 ### Global methods
@@ -194,6 +215,7 @@ Add a global custom validator
 | `fn`       | -                  | <center>✔</center> | The function that validates the field. See [Validator function arguments](#validator-function-arguments)                                                                                                                                                                                                                                                                                                                            |
 | `message`  | -                  | <center>✔</center> | The message to show when the validation fails. If the arguments are strings, it supports simple templating. `${0}` for the input's value, `${1}` and so on are for the attribute values. For the above example, `${0}` will get replaced by `myValue`, `${1}` by `10`, `${2}` by `20`, `${3}` by `dhaka`. It can also be a function which should return the error string. The values and inputs are available as function arguments |
 | `priority` | 1                  | <center>✕</center> | Priority of the validator function. The higher the value, the earlier it gets called when there are multiple validators on one field.                                                                                                                                                                                                                                                                                               |
+| `halt`     | `false`            | <center>✕</center> | Whether to halt validation on the current field after this validator fails. When `true`, the remaining validators on the field are skipped. |
 
 #### `Pristine.setLocale(locale)`
 
@@ -201,7 +223,7 @@ Set the current locale globally
 
 | Parameter | Default | Required?          | Description                                                                     |
 | --------- | ------- | ------------------ | ------------------------------------------------------------------------------- |
-| `locale`  | -       | <center>✔</center> | Error messages on new Pristine forms will be displayed according to this locale |
+| `locale`  | -       | <center>✔</center> | Error messages of all Pristine instances use this locale, starting with the next validation |
 
 #### `Pristine.addMessages(locale, messages)`
 
@@ -212,7 +234,7 @@ Set the messages for a specific locale globally
 | `locale`   | -       | <center>✔</center> | The corresponding locale                                            |
 | `messages` | -       | <center>✔</center> | Object containing validator names as keys and error texts as values |
 
-### Instance methids
+### Instance methods
 
 #### `pristine.validate(inputs, silent)`
 
@@ -221,7 +243,7 @@ _Validate the form or field(s)_
 | Parameter | Default | Required?          | Description                                                                                                                                                                                  |
 | --------- | ------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `inputs`  | -       | <center>✕</center> | When not given, full form is validated. inputs can be one DOM element or a collection of DOM elements returned by `document.getElement...`, `document.querySelector...` or even `jquery` dom |
-| `silent`  | `false` | <center>✕</center> | Does not show error error messages when `silent` is `true`                                                                                                                                   |
+| `silent`  | `false` | <center>✕</center> | Does not show error messages when `silent` is `true`                                                                                                                                   |
 
 Returns a `Promise` that resolves to `true` or `false`
 
@@ -243,7 +265,7 @@ _Get the errors of the form or a specific field_
 
 | Parameter | Default | Required?          | Description                                                                                                                                                                                                                                                            |
 | --------- | ------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `input`   | -       | <center>✕</center> | When `input` is given, it returns the errors of that input element, otherwise returns all errors of the form as an object, using input element as key and corresponding errors as value. `validate()` must be called before expecting this method to return correctly. |
+| `input`   | -       | <center>✕</center> | When `input` is given, it returns the errors of that input element as an array of strings. Otherwise it returns an array of `{ input, errors }` objects, one for each invalid field. `validate()` must be called before expecting this method to return correctly. |
 
 #### `pristine.addError(input, error)`
 
@@ -251,7 +273,7 @@ _Add A custom error to an input element_
 
 | Parameter | Default | Required?          | Description                                          |
 | --------- | ------- | ------------------ | ---------------------------------------------------- |
-| `input`   | -       | <center>✕</center> | The input element to which the error should be given |
+| `input`   | -       | <center>✔</center> | The input element to add the error to. Call `validate()` first, which creates the field's list of errors |
 | `error`   | -       | <center>✔</center> | The error string                                     |
 
 #### `pristine.setGlobalConfig(config)`
@@ -260,7 +282,7 @@ _Set the global configuration_
 
 | Parameter | Default | Required?          | Description                                                 |
 | --------- | ------- | ------------------ | ----------------------------------------------------------- |
-| `config`  | -       | <center>✔</center> | Set the default configuration globally to use in all forms. |
+| `config`  | -       | <center>✔</center> | Replace the default configuration used by Pristine instances created afterwards. It replaces the defaults instead of merging with them, so pass every option. |
 
 #### `pristine.reset()`
 
