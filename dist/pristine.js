@@ -44,7 +44,7 @@ const L = "pristine-error", N = "input:not([disabled]):not([type^=hidden]):not([
   "minlength",
   "maxlength",
   "pattern"
-], O = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, F = /-message(?:-([a-z]{2}(?:_[A-Z]{2})?))?/;
+], F = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, O = /-message(?:-([a-z]{2}(?:_[A-Z]{2})?))?/;
 let m = "en";
 const R = {}, p = (t, l) => {
   l.name = t, l.priority === void 0 && (l.priority = 1), R[t] = l;
@@ -55,8 +55,12 @@ p("required", {
   priority: 99,
   halt: !0
 });
-p("email", { fn: (t, l) => !t || O.test(t) });
-p("number", { fn: (t, l) => !t || !isNaN(parseFloat(t)), priority: 2 });
+p("email", { fn: (t, l) => !t || F.test(t) });
+p("number", {
+  // parseFloat alone would accept '123abc', isFinite alone would accept blank strings
+  fn: (t, l) => !t || !isNaN(parseFloat(t)) && isFinite(t),
+  priority: 2
+});
 p("integer", { fn: (t, l) => !t || /^\d+$/.test(t) });
 p("minlength", {
   fn: (t, l, o) => !t || t.length >= parseInt(o)
@@ -93,7 +97,7 @@ function q(t, l, o = !0) {
       Array.from(s.attributes).forEach((u) => {
         if (/^data-pristine-/.test(u.name)) {
           let g = u.name.substr(14);
-          const T = g.match(F);
+          const T = g.match(O);
           if (T !== null) {
             const b = T[1] === void 0 ? "en" : T[1];
             f.hasOwnProperty(b) || (f[b] = {}), f[b][g.slice(0, g.length - T[0].length)] = u.value;

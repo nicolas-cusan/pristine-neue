@@ -16,7 +16,8 @@ describe('Pristine Built-in Validators', () => {
           <input id="email" type="email" class="form-control" />
         </div>
         <div class="field">
-          <input id="number" type="number" class="form-control" />
+          <!-- Not type="number": jsdom (like browsers) empties non-numeric values of number inputs -->
+          <input id="number" type="text" data-pristine-type="number" class="form-control" />
         </div>
         <div class="field">
           <input id="integer" type="text" data-pristine-type="integer" class="form-control" />

@@ -154,7 +154,7 @@ describe('Pristine Core Functionality', () => {
     expect(result).toBe(true);
   });
 
-  test.skip('should validate number fields with min/max', async () => {
+  test('should validate number fields with min/max', async () => {
     // Create a new form with a number input for this specific test
     const fixture = createFormFixture(`
       <form id="number-form" novalidate method="post">

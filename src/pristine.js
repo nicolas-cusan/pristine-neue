@@ -49,7 +49,11 @@ _('required', {
   halt: true,
 });
 _('email', { fn: (val, el) => !val || EMAIL_REGEX.test(val) });
-_('number', { fn: (val, el) => !val || !isNaN(parseFloat(val)), priority: 2 });
+_('number', {
+  // parseFloat alone would accept '123abc', isFinite alone would accept blank strings
+  fn: (val, el) => !val || (!isNaN(parseFloat(val)) && isFinite(val)),
+  priority: 2,
+});
 _('integer', { fn: (val, el) => !val || /^\d+$/.test(val) });
 _('minlength', {
   fn: (val, el, length) => !val || val.length >= parseInt(length),
