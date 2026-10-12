@@ -5,9 +5,6 @@ hero:
   name: Pristine Neue
   text: Vanilla JavaScript form validation
   tagline: About 3 kB gzipped, with no dependencies. It validates from the HTML attributes you already write, and supports custom, async and translated validators.
-  image:
-    src: /logo.svg
-    alt: Pristine Neue
   actions:
     - theme: brand
       text: Get started
